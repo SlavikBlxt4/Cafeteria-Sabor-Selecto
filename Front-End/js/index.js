@@ -6,6 +6,7 @@ let cart = [];
 //prueba 3
 //prueba 4
 //klkkkkk
+// cagoendiossss
 
 
 document.addEventListener('DOMContentLoaded', () => {
