@@ -1,7 +1,7 @@
 let products = [];
 let cart = [];
 
-
+/* ZONA DE AVANCES DE XAVI */
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
@@ -9,9 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchFavouriteCoffees(1);
   loginUser('test8@test.com', 'test8');
 });
-
-
-
 
 async function loginUser(email, password){
   const response = await fetch('http://localhost:3000/users/login', {
@@ -133,6 +130,8 @@ async function deleteFavouriteCoffee(idUser, idCoffee){
 
 
 
+/* ZONA DE AVANCES DE CRESPÁN */
+
 //* selectors
 
 const selectors = {
@@ -166,12 +165,11 @@ const setupListeners = () => {
 //* event handlers
 
 const initStore = () => {
-  loadCart();
-  /*
+  /*loadCart();
+  
   loadProducts("https://fakestoreapi.com/products")
     .then(renderProducts)
     .finally(renderCart);*/
-    renderCart;  /*cuando se haga lo de los productos, esta linea se eliminará y se deja lo comentado de arriba */
 };
 
 const showCart = () => {
@@ -372,6 +370,46 @@ Number.prototype.format = function () {
   });
 };
 */
+
+
+// Función para cerrar las cartas de login y registro
+function cerrar(selector) {
+  // Verificar si el argumento pasado es un selector válido
+  if (typeof selector === 'string') {
+    // Buscar el elemento correspondiente al selector
+    const elemento = document.querySelector(selector);
+    if (elemento) {
+      elemento.style.zIndex = '-1';
+    } else {
+      console.error(`No se encontró ningún elemento con el selector ${selector}.`);
+    }
+  } else {
+    console.error('El argumento pasado no es un selector válido.');
+  }
+}
+
+// Función para abrir la carta de login
+function abrir() {
+  const loginElement = document.querySelector('.login');
+  if (loginElement) {
+    loginElement.style.zIndex = '1';
+  } else {
+    console.error('No se encontró ningún elemento con la clase .login.');
+  }
+}
+
+// Función para abrir la carta de registro
+function abrirRegistro() {
+  const registerElement = document.querySelector('.register');
+  const loginElement = document.querySelector('.login');
+  if (registerElement) {
+    loginElement.style.zIndex = '-1';  // Cerrar la carta de login
+    registerElement.style.zIndex = '1';  // Abrir la carta de registro
+  } else {
+    console.error('No se encontró ningún elemento con la clase .register.');
+  }
+}
+
 
 //* initialize
 

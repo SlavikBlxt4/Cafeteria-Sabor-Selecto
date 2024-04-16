@@ -19,7 +19,7 @@
 					</div>
 
 					<div class="container-user">
-						<i class="fa-solid fa-user"></i>
+						<i class="fa-solid fa-user" id="user-btn" onclick="abrir()"></i>
 						<button class="cart-btn">
 							<i class="fa-solid fa-bag-shopping"></i>
 				  
@@ -28,6 +28,37 @@
 					</div>
 				</div>
 			</div>
+
+			<!-- Cartas de login y registro -->
+			<div class="login">
+				<div id="login-form" class="form-container">
+				  <button class="cerrar" onclick="cerrar('.login')">
+					<i class="fa-solid fa-xmark"></i>
+				  </button>
+				  <h2>Iniciar Sesión</h2>
+				  <form id="login-form">
+					<input type="email" id="login-email" placeholder="Correo Electrónico" required>
+					<input type="password" id="login-password" placeholder="Contraseña" required>
+					<button class="botonUser" type="submit">Iniciar Sesión</button>
+					<p>¿No tienes cuenta? <a id="registro-enlace" href="#" onclick="abrirRegistro()">REGISTRATE</a></p>
+				  </form>
+				</div>
+			</div>
+			
+			<div class="register">
+				<div id="register-form" class="form-container">
+				  <button class="cerrar" onclick="cerrar('.register')">
+					<i class="fa-solid fa-xmark"></i>
+				  </button>
+				  <h2>Registrarse</h2>
+				  <form id="register-form">
+					<input type="email" id="register-email" placeholder="Correo Electrónico" required>
+					<input type="password" id="register-password" placeholder="Contraseña" required>
+					<button class="botonUser" type="submit">Registrarse</button>
+				  </form>
+				</div>
+			</div>
+
 
 			<!-- Apartado carrito -->
 			 <div class="cart-overlay"></div> <!-- máscara oscura que se desplega a la vez que el apartado del carrito -->
@@ -383,7 +414,7 @@
 				<img src="images/Logo FINAL.jpg" alt="Logo Sabor Selecto" />
 			</div>
 			<div class="contact-form" id="contacto">
-				<div class="form-container">
+				<div class="form-container-contacto">
 					<h1>Write us</h1>
 					<form action="#" method="post">
 						<label for="name">Name*:</label>
