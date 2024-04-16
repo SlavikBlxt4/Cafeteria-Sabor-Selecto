@@ -1,6 +1,70 @@
 let products = [];
 let cart = [];
 
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  fetchCoffees();
+  fetcCategories();
+  fetchFavouriteCoffees(1);
+});
+
+function fetchCoffees(){
+  fetch('http://localhost:3000/coffee')
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+  });
+}
+
+function fetcCategories(){
+  fetch('http://localhost:3000/category')
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+  });
+}
+
+function fetchCoffeesPerCategory(idCategory){
+  fetch(`http://localhost:3000/coffee/${idCategory}`)
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+  });
+}
+
+function fetchFavouriteCoffees(idUser){
+  fetch(`http://localhost:3000/favourites/${idUser}`)
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+  });
+}
+
+
+async function addFavouriteCoffee(idUser, idCoffee){
+  const response = await fetch('http://localhost:3000/favourites', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({id_user: idUser, id_coffee: idCoffee})
+  });
+  const data = await response.json();
+  console.log(data);
+}
+
+
+async function deleteFavouriteCoffee(idUser, idCoffee){
+  const response = await fetch(`http://localhost:3000/favourites/${idUser}/${idCoffee}`, {
+      method: 'DELETE',
+  });
+  const data = await response.json();
+  console.log(data);
+} 
+
+
+
 //* selectors
 
 const selectors = {
