@@ -1,13 +1,6 @@
 let products = [];
 let cart = [];
 
-//prueba pull y push
-//prueba 2
-//prueba 3
-//prueba 4
-//klkkkkk
-// cagoendiossss
-//viva cristo rey
 
 
 document.addEventListener('DOMContentLoaded', () => {
