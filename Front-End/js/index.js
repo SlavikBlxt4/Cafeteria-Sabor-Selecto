@@ -7,7 +7,75 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
   fetcCategories();
   fetchFavouriteCoffees(1);
+  loginUser('test8@test.com', 'test8');
 });
+
+
+
+
+async function loginUser(email, password){
+  const response = await fetch('http://localhost:3000/users/login', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({email, password})
+  });
+  const data = await response.json();
+  if (data.token){
+      localStorage.setItem('token', data.token);
+      console.log(data.token);
+      console.log(`Logged in as ${email}`);
+  }
+}
+
+function getToken(){
+  return localStorage.getItem('token');
+}
+
+function enlaceClicado(event) {
+  event.preventDefault(); // Evita el comportamiento predeterminado del enlace
+  const token = getToken();
+
+  if (token) {
+    // Agregar el token como encabezado de autorización
+    const headers = {
+      'Authorization': `Bearer ${token}`
+    };
+
+    // Hacer la solicitud a la página protegida con el token en el encabezado
+    fetch(event.target.href, { headers, redirect: 'follow' })
+      .then(response => {
+        Response.redirected('http://localhost:3000/private-area', true);
+        
+        const wasRedirected = response.redirected;
+        if (wasRedirected) {
+          console.log('The request was redirected.');
+        } else {
+          console.log('The request was not redirected.');
+        }
+
+    // Handle the response as desired
+    console.log(response);
+      })
+      .catch(error => {
+        // Manejar el error si ocurre
+        console.error('Error:', error);
+      });
+  } else {
+    // Manejar el caso en que no haya un token en el local storage
+    console.error('No se encontró un token en el local storage.');
+  }
+}
+
+// Agregar un evento de clic al enlace para manejarlo con la función enlaceClicado
+document.getElementById('employee').addEventListener('click', enlaceClicado);
+
+
+
+
+
+
 
 function fetchCoffees(){
   fetch('http://localhost:3000/coffee')
