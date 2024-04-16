@@ -2,6 +2,7 @@ let products = [];
 let cart = [];
 
 //prueba pull y push
+//prueba 2
 
 
 document.addEventListener('DOMContentLoaded', () => {
