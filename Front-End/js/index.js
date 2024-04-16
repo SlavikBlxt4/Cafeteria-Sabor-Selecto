@@ -3,6 +3,7 @@ let cart = [];
 
 //prueba pull y push
 //prueba 2
+//prueba 3
 
 
 document.addEventListener('DOMContentLoaded', () => {
