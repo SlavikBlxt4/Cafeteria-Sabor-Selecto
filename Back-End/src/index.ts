@@ -91,13 +91,13 @@ app.get("/favourites/:id_user", async (req, res) => { //query para obtener todos
         const { id_user } = req.params;
 
         const { rows } = await myPool.query(
-            "SELECT * FROM coffee WHERE coffee.id IN (SELECT id_coffee FROM favourite_coffee WHERE id_user = $1);",
+            "SELECT * FROM coffee WHERE coffee.id IN (SELECT id_coffee FROM coffee_cart WHERE id_user = $1);",
             [id_user]
         );
 
         res.status(200).json(rows);
     } catch (error) {
-        console.error("Error al obtener películas favoritas:", error);
+        console.error("Error al obtener cafés de la cesta:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 });
@@ -107,26 +107,26 @@ app.post("/favourites", async (req, res) => { //metodo para permitir a un usuari
         const { id_coffee, id_user } = req.body; 
 
         await myPool.query(
-            "INSERT INTO favourite_coffee (id_coffee, id_user) VALUES ($1, $2)",
+            "INSERT INTO coffee_cart (id_coffee, id_user) VALUES ($1, $2)",
             [id_coffee, id_user]
         );
-        res.status(200).json({ message: "Café agregado a favoritos correctamente" });
+        res.status(200).json({ message: "Café agregado a la cesta correctamente" });
     } catch (error) {
-        console.error("Error al agregar cafés a favoritos:", error);
+        console.error("Error al agregar cafés a la cesta:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 });
 
-app.delete("/favourites/:id_coffee/:id_user", async (req, res) => { //metodo para permitir a un usuario eliminar un cafe de favoritos
+app.delete("/favourites/:id_coffee/:id_user", async (req, res) => { //metodo para permitir a un usuario eliminar un cafe de la cesta
     try {
         const { id_coffee, id_user } = req.params;
         await myPool.query(
-            "DELETE FROM favourite_coffee WHERE id_coffee = $1 AND id_user = $2",
+            "DELETE FROM coffee_cart WHERE id_coffee = $1 AND id_user = $2",
             [id_coffee, id_user]
         );
-        res.status(200).json({ message: "Café eliminado de favoritos correctamente" });
+        res.status(200).json({ message: "Café eliminado de la cesta correctamente" });
     } catch (error) {
-        console.error("Error al eliminar café de favoritos:", error);
+        console.error("Error al eliminar café de la cesta:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 });

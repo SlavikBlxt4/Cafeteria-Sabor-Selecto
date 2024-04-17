@@ -6,7 +6,7 @@ let usuarioId;
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
-  fetcCategories();
+  fetchCategories();
   fetchFavouriteCoffees(1);
 });
 
@@ -198,7 +198,7 @@ function fetchCoffees(){
   });
 }
 
-function fetcCategories(){
+function fetchCategories(){
   fetch('http://localhost:3000/category')
   .then(response => response.json())
   .then(data => {
