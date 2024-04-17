@@ -41,9 +41,8 @@ function enlaceClicado(event) {
     };
 
     // Hacer la solicitud a la página protegida con el token en el encabezado
-    fetch(event.target.href, { headers, redirect: 'follow' })
+    fetch('http://localhost:3000/private-area', { headers })
       .then(response => {
-        Response.redirected('http://localhost:3000/private-area', true);
         
         const wasRedirected = response.redirected;
         if (wasRedirected) {
