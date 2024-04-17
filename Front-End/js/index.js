@@ -58,7 +58,13 @@ async function enlaceClicado(event) {
         }
       } else {
         const html = await response.text();
-        document.body.innerHTML = html; // Display the HTML response
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        document.body.innerHTML = doc.body.innerHTML;
+
+        // Opcionalmente, reemplazar también el head para incluir estilos específicos
+        document.head.innerHTML = doc.head.innerHTML;
+        window.scrollTo(0, 0);
       }
     } else {
       console.error('Error al acceder a la página protegida');
