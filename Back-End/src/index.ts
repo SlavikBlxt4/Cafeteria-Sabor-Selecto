@@ -163,9 +163,8 @@ app.post('/users/login', async (req, res) => { //para logear a los usuarios
             
         );
         
-        
 
-        return res.status(200).json({ mensaje: 'Login exitoso', token });
+        return res.status(200).json({ mensaje: 'Login exitoso', token, usuarioId: usuario.id });
     } catch (error) {
         return res.status(500).json({ mensaje: 'Error al realizar el login', error });
     }

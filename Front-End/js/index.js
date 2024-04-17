@@ -1,5 +1,6 @@
 let products = [];
 let cart = [];
+let usuarioId;
 
 /* ZONA DE AVANCES DE XAVI */
 
@@ -7,24 +8,23 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
   fetcCategories();
   fetchFavouriteCoffees(1);
-  loginUser('test8@test.com', 'test8');
 });
 
-async function loginUser(email, password){
-  const response = await fetch('http://localhost:3000/users/login', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({email, password})
-  });
-  const data = await response.json();
-  if (data.token){
-      localStorage.setItem('token', data.token);
-      console.log(data.token);
-      console.log(`Logged in as ${email}`);
+
+// Guardar usuarioId en localStorage
+
+
+// Obtener usuarioId desde localStorage al cargar la página
+window.onload = function() {
+  const usuarioId = localStorage.getItem('usuarioId');
+  if (usuarioId) {
+    console.log('Usuario ID:', usuarioId);
+    // Realizar acciones adicionales ahora que tiene el usuarioId
   }
-}
+};
+
+
+
 
 function getToken(){
   return localStorage.getItem('token');
@@ -78,6 +78,112 @@ async function enlaceClicado(event) {
 document.getElementById('employee').addEventListener('click', enlaceClicado);
 document.getElementById('manager').addEventListener('click', enlaceClicado);
 
+
+
+
+
+
+document.getElementById('login-form').addEventListener('submit', async (event) => {
+  event.preventDefault(); // Evitar la recarga de la página
+
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+
+  try {
+      const response = await fetch('http://localhost:3000/users/login', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+          throw new Error('Error al iniciar sesión');
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al iniciar sesión',
+          text: data.error === 'User not found' ? 'Esta cuenta no está registrada.' : data.error
+        });
+
+    } else {
+        console.log(data); // Manejar la respuesta del servidor según lo necesario
+        localStorage.setItem('token', data.token);
+        Swal.fire({
+          icon: 'success',
+          title: '¡Sesión iniciada!',
+          text: 'Sesión iniciada correctamente.'
+        });
+        usuarioId=data.usuarioId;
+        console.log(usuarioId);
+        localStorage.setItem('usuarioId', usuarioId);
+
+        cerrar('.login');
+    }
+
+
+  } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudo iniciar sesión',
+        text: 'Esta cuenta no está registrada, verifique las credenciales.'
+      });
+  }
+});
+
+// Manejo del formulario de registro
+document.getElementById('register-form').addEventListener('submit', async (event) => {
+  event.preventDefault(); // Evitar la recarga de la página
+
+  const email = document.getElementById('register-email').value;
+  const password = document.getElementById('register-password').value;
+
+  try {
+      const response = await fetch('http://localhost:3000/users', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+      });
+
+      if (!response.ok) {
+          throw new Error('Error al registrar usuario');
+      }
+
+      const data = await response.json();
+
+      if (data.error) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al registrar',
+            text: data.error === 'User already exists' ? 'Esta cuenta ya está registrada. Por favor, ve a iniciar sesión.' : data.error
+          });
+      } else {
+          console.log(data); // Manejar la respuesta del servidor según lo necesario
+          Swal.fire({
+            icon: 'success',
+            title: '¡Registro exitoso!',
+            text: 'Usuario registrado correctamente.'
+          });
+          cerrar('.register');
+      }
+
+  } catch (error) {
+      console.error('Error al registrar usuario:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de conexión',
+        text: 'Esta cuenta ya está registrada. Por favor, ve a iniciar sesión.'
+      });
+  }
+});
 
 
 
