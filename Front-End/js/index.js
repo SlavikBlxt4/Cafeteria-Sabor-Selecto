@@ -30,37 +30,41 @@ function getToken(){
   return localStorage.getItem('token');
 }
 
-function enlaceClicado(event) {
-  event.preventDefault(); // Evita el comportamiento predeterminado del enlace
+async function enlaceClicado(event) {
+  event.preventDefault(); // Prevent the default link behavior
+
   const token = getToken();
+  if (!token) {
+    return console.error('No se pudo obtener el token del usuario');
+  }
 
-  if (token) {
-    // Agregar el token como encabezado de autorización
-    const headers = {
-      'Authorization': `Bearer ${token}`
-    };
+  const enlace = event.target;
+  const url = enlace.href;
 
-    // Hacer la solicitud a la página protegida con el token en el encabezado
-    fetch('http://localhost:3000/private-area', { headers })
-      .then(response => {
-        
-        const wasRedirected = response.redirected;
-        if (wasRedirected) {
-          console.log('The request was redirected.');
+  const headers = new Headers();
+  headers.append('Authorization', `Bearer ${token}`);
+
+  try {
+    const response = await fetch(url, { headers });
+    if (response.status === 200) {
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        const data = await response.json();
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+          window.location.href = url; // Redirect to the protected page
         } else {
-          console.log('The request was not redirected.');
+          console.error('No se pudo obtener el token de la respuesta');
         }
-
-    // Handle the response as desired
-    console.log(response);
-      })
-      .catch(error => {
-        // Manejar el error si ocurre
-        console.error('Error:', error);
-      });
-  } else {
-    // Manejar el caso en que no haya un token en el local storage
-    console.error('No se encontró un token en el local storage.');
+      } else {
+        const html = await response.text();
+        document.body.innerHTML = html; // Display the HTML response
+      }
+    } else {
+      console.error('Error al acceder a la página protegida');
+    }
+  } catch (error) {
+    console.error('Error al acceder a la página protegida', error);
   }
 }
 
