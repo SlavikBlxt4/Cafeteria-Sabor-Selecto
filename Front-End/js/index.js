@@ -76,6 +76,7 @@ async function enlaceClicado(event) {
 
 // Agregar un evento de clic al enlace para manejarlo con la función enlaceClicado
 document.getElementById('employee').addEventListener('click', enlaceClicado);
+document.getElementById('manager').addEventListener('click', enlaceClicado);
 
 
 
