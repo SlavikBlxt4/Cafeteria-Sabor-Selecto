@@ -210,12 +210,14 @@ function createProductCard(product) {
   // Crear el elemento de la tarjeta del producto
   const cardProduct = document.createElement('div');
   cardProduct.classList.add('card-product');
+  if (product.category_id === 3) {
+    cardProduct.style.width = '300px';
+  }
 
   // Agregar contenido a la tarjeta
   cardProduct.innerHTML = `
       <div class="container-img">
           <img src="${product.img}" />
-          ${product.discount ? `<span class="discount">-13%</span>` : ''}
           <div class="button-group">
               <span><i class="fa-regular fa-eye"></i></span>
               <span><i class="fa-regular fa-heart"></i></span>
@@ -274,13 +276,22 @@ function fetchCategories(){
   });
 }
 
-function fetchCoffeesPerCategory(idCategory){
+function renderCoffeesPerCategory(idCategory){
   fetch(`http://localhost:3000/coffee/${idCategory}`)
-  .then(response => response.json())
-  .then(data => {
-      console.log(data);
-  });
+    .then(response => response.json())
+    .then(data => {
+        // Suponiendo que 'createProductCards' y/o 'renderProducts' son las funciones que ya tienes para renderizar los cafés
+        createProductCards(data);
+        renderProducts(data);
+    })
+    .catch(error => console.error('Error al obtener los cafés por categoría:', error));
 }
+
+
+document.getElementById('capsules').addEventListener('click', () => renderCoffeesPerCategory(1));
+document.getElementById('boxes').addEventListener('click', () => renderCoffeesPerCategory(2));
+document.getElementById('mix').addEventListener('click', () => renderCoffeesPerCategory(3));
+
 
 function fetchFavouriteCoffees(idUser){
   fetch(`http://localhost:3000/favourites/${idUser}`)

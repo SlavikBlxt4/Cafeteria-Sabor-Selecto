@@ -894,6 +894,7 @@ html {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
 	gap: 3rem;
+	
 }
 
 .card-product {
@@ -906,10 +907,12 @@ html {
 
 .container-img {
 	position: relative;
+	
 }
 
 .container-img img {
 	width: 100%;
+	
 }
 
 .container-img .discount {
