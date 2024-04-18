@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
   fetchCategories();
   fetchFavouriteCoffees(1);
+
 });
 
 
@@ -19,6 +20,7 @@ window.onload = function() {
   const usuarioId = localStorage.getItem('usuarioId');
   if (usuarioId) {
     console.log('Usuario ID:', usuarioId);
+    console.log('token:', getToken());
     // Realizar acciones adicionales ahora que tiene el usuarioId
   }
 };
@@ -72,6 +74,17 @@ async function enlaceClicado(event) {
   } catch (error) {
     console.error('Error al acceder a la página protegida', error);
   }
+}
+
+
+function fetchCoffees(){
+  fetch('http://localhost:3000/coffee')
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+      createProductCards(data);
+      renderProducts(data);
+  });
 }
 
 // Agregar un evento de clic al enlace para manejarlo con la función enlaceClicado
@@ -185,18 +198,73 @@ document.getElementById('register-form').addEventListener('submit', async (event
   }
 });
 
-
-
-
-
-
-function fetchCoffees(){
-  fetch('http://localhost:3000/coffee')
-  .then(response => response.json())
-  .then(data => {
-      console.log(data);
+function createProductCards(products) {
+  products.forEach(product => {
+    createProductCard(product);
   });
 }
+
+
+// Función para crear una tarjeta de producto
+function createProductCard(product) {
+  // Crear el elemento de la tarjeta del producto
+  const cardProduct = document.createElement('div');
+  cardProduct.classList.add('card-product');
+
+  // Agregar contenido a la tarjeta
+  cardProduct.innerHTML = `
+      <div class="container-img">
+          <img src="${product.img}" />
+          ${product.discount ? `<span class="discount">-13%</span>` : ''}
+          <div class="button-group">
+              <span><i class="fa-regular fa-eye"></i></span>
+              <span><i class="fa-regular fa-heart"></i></span>
+              <span><i class="fa-solid fa-code-compare"></i></span>
+          </div>
+      </div>
+      <div class="content-card-product">
+          <div class="stars">
+              ${'*'.repeat(product.stars).split('').map(star => `<i class="fa-solid fa-star"></i>`).join('')}
+              ${'*'.repeat(5 - product.stars).split('').map(star => `<i class="fa-regular fa-star"></i>`).join('')}
+          </div>
+          <h3>${product.name}</h3>
+          
+          <span class="add-cart">
+              <i class="fa-solid fa-bag-shopping"></i>
+          </span>
+          <p class="price">$${product.price} <span>$${product.price}</span></p>
+      </div>
+  `;
+
+  return cardProduct;
+  
+}
+
+// Función para renderizar productos
+function renderProducts(products) {
+  // Selecciona el contenedor donde se agregarán las tarjetas de productos
+  const containerProducts = document.querySelector('.container-products');
+
+  // Limpia el contenedor de productos existentes
+  containerProducts.innerHTML = '';
+
+  // Crea y agrega cada tarjeta de producto al contenedor
+  products.forEach(product => {
+      const productCard = createProductCard(product);
+      containerProducts.appendChild(productCard);
+  });
+}
+
+// Ejemplo de uso:
+// Suponiendo que tienes una función fetchCoffee que recoge todos los cafés de la base de datos y devuelve una promesa
+
+
+
+
+
+
+
+
 
 function fetchCategories(){
   fetch('http://localhost:3000/category')

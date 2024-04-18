@@ -61,7 +61,7 @@ if (!secretKey) {
 
 app.get("/coffee", async (req, res)=>{     
     const {rows} = await myPool.query(   
-        "SELECT * FROM coffee;"
+        "SELECT * FROM coffee ORDER BY id ASC;;"
         
     );
     res.json(rows);

@@ -1003,7 +1003,7 @@ html {
 .add-cart {
 	justify-self: start;
 	border: 2px solid var(--primary-color);
-	padding: 1rem;
+	padding: 0 1.65rem 0 1.65rem;
 	border-radius: 50%;
 	cursor: pointer;
 	transition: all 0.4s ease;
