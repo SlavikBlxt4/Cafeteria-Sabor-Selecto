@@ -234,7 +234,7 @@ function createProductCard(product) {
           <span class="add-cart">
               <i class="fa-solid fa-bag-shopping"></i>
           </span>
-          <p class="price">$${product.price} <span>$${product.price}</span></p>
+          <p class="price">${product.price} <span>${product.price}</span></p>
       </div>
   `;
 
@@ -291,6 +291,7 @@ function renderCoffeesPerCategory(idCategory){
 document.getElementById('capsules').addEventListener('click', () => renderCoffeesPerCategory(1));
 document.getElementById('boxes').addEventListener('click', () => renderCoffeesPerCategory(2));
 document.getElementById('mix').addEventListener('click', () => renderCoffeesPerCategory(3));
+document.getElementById('all').addEventListener('click', () => fetchCoffees());
 
 
 function fetchFavouriteCoffees(idUser){
