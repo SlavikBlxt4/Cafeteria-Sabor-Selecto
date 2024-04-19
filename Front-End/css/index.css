@@ -907,6 +907,14 @@ html {
 	max-width: 200px;
 }
 
+#employee:hover{
+	cursor: pointer;
+}
+
+#manager:hover{
+	cursor: pointer;
+}
+
 .container-img {
 	position: relative;
 	

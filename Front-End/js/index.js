@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // Obtener usuarioId desde localStorage al cargar la página
-window.onload = function() {
+window.onload = function() { //comprobacion de id y token del usuario logeado al cargar la página
   const usuarioId = localStorage.getItem('usuarioId');
   if (usuarioId) {
     console.log('Usuario ID:', usuarioId);
@@ -32,59 +32,16 @@ function getToken(){
   return localStorage.getItem('token');
 }
 
-async function enlaceClicado(event) {
-  event.preventDefault(); // Prevent the default link behavior
-
+function enlaceClicado(url, puerto) {
   const token = getToken();
   if (!token) {
     return console.error('No se pudo obtener el token del usuario');
   }
+  
+  const urlConPuerto = `${window.location.protocol}//${window.location.hostname}:${puerto}${url}`;
 
-  const enlace = event.target;
-  const url = enlace.href;
-
-  const headers = new Headers();
-  headers.append('Authorization', `Bearer ${token}`);
-
-  try {
-    const response = await fetch(url, { headers });
-    if (response.status === 200) {
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        const data = await response.json();
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          window.location.href = url; // Redirect to the protected page
-        } else {
-          console.error('No se pudo obtener el token de la respuesta');
-        }
-      } else {
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        
-        // Reemplazar el contenido del body
-        document.body.innerHTML = doc.body.innerHTML;
-        
-        // Opcionalmente, reemplazar también el head para incluir estilos específicos
-        document.head.innerHTML = doc.head.innerHTML;
-        
-        // Crear un nuevo elemento de script para el kit de FontAwesome
-        const script = document.createElement('script');
-        script.src = "https://kit.fontawesome.com/81581fb069.js";
-        script.crossorigin = "anonymous";
-        
-        // Añadir el script al documento
-        document.head.appendChild(script);
-
-        window.scrollTo(0, 0);
-      }
-    } else {
-      console.error('Error al acceder a la página protegida');
-    }
-  } catch (error) {
-    console.error('Error al acceder a la página protegida', error);
-  }
+  window.location.href = `${urlConPuerto}?token=${encodeURIComponent(token)}`;
+ 
 }
 
 
@@ -99,8 +56,12 @@ function fetchCoffees(){
 }
 
 // Agregar un evento de clic al enlace para manejarlo con la función enlaceClicado
-document.getElementById('employee').addEventListener('click', enlaceClicado);
-document.getElementById('manager').addEventListener('click', enlaceClicado);
+document.getElementById('employee').addEventListener('click', function(){
+  enlaceClicado('/private-area', 3000);
+});
+document.getElementById('manager').addEventListener('click', function(){
+  enlaceClicado('/private-area', 5500);
+});
 
 
 

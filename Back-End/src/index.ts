@@ -9,6 +9,7 @@ import path from 'path';
 
 
 
+
 const app = express();
 app.use(cors());
 const PORT = 3000;
@@ -52,7 +53,10 @@ if (!secretKey) {
 
 
 
+interface AuthenticatedRequest extends Request {
+    user?: any; // Puedes definir un tipo más específico para user
 
+  }
 
 
 
@@ -171,33 +175,39 @@ app.post('/users/login', async (req, res) => { //para logear a los usuarios
 });
 
 
-async function authenticateToken(req: Request, res: Response, next: NextFunction) {
-    const token = req.headers.authorization?.split(' ')[1]; // Obtener el token JWT del encabezado Authorization
-    
-    if (!token) {
-      return res.status(401).json({ message: 'Token no proporcionado' });
-    }
+async function authenticateToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  // Obtener el token JWT del parámetro de consulta 'token'
+  const token = typeof req.query.token === 'string' ? req.query.token : null;
   
-    try {
-        const actualSecretKey = process.env.SECRET_KEY; // Access the secret key from environment variables
-        if (!actualSecretKey) {
-        throw new Error('Secret key not found in environment variables');
-      }
+  if (!token) {
+    return res.status(401).json({ message: 'Token no proporcionado' });
+  }
 
-
-      const decodedToken: any = jwt.verify(token, actualSecretKey);     // Verificar el token con la clave secreta
-      req.body.user = decodedToken; // Guardar el usuario decodificado en el objeto de solicitud para usarlo en las rutas protegidas
-      next(); // Pasar al siguiente middleware
-    } catch (error) {
-      return res.status(403).json({ message: 'Token inválido' });
+  try {
+    const actualSecretKey = process.env.SECRET_KEY; // Acceder a la clave secreta desde las variables de entorno
+    if (!actualSecretKey) {
+      throw new Error('Clave secreta no encontrada en las variables de entorno');
     }
+
+
+    
+    // Verificar el token con la clave secreta
+    const decodedToken = jwt.verify(token, actualSecretKey);
+    // Guardar el usuario decodificado en el objeto de solicitud para usarlo en las rutas protegidas
+    req.user = decodedToken;    
+    next(); // Pasar al siguiente middleware
+  } catch (error) {
+    return res.status(403).json({ message: 'Token inválido' });
+  }
   }
 
 
-  app.get('/private-area', authenticateToken, async (req, res) => {
+  app.get('/private-area', authenticateToken, async (req: AuthenticatedRequest, res) => {
     // Acceder al usuario decodificado desde req.body.user
-    const user = req.body.user;
+    const user = req.user;
     console.log(user);
+    const token = req.query.token;
+    res.set('Authorization', 'Bearer ' + token);
   
     // Realizar la consulta a la base de datos para verificar el id_rol del usuario
     try {
@@ -217,6 +227,10 @@ async function authenticateToken(req: Request, res: Response, next: NextFunction
       if (+id_rol !== 2 && +id_rol !== 3) {
         return res.status(403).json({ message: 'Acceso no autorizado para este rol de usuario' });
     }
+
+    
+    
+
   
     return res.sendFile(path.join(__dirname, 'Intranet', 'index.html'));
     } catch (error) {
