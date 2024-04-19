@@ -870,13 +870,14 @@ html {
 }
 
 .container-options span {
-	color: #777;
+	color: #14552f;
 	background-color: #fff;
 	padding: 0.7rem 3rem;
 	font-size: 1.4rem;
 	text-transform: capitalize;
 	border-radius: 2rem;
 	cursor: pointer;
+	transition: 0.3s;
 }
 
 .container-options span:hover {

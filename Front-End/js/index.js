@@ -62,10 +62,21 @@ async function enlaceClicado(event) {
         const html = await response.text();
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
+        
+        // Reemplazar el contenido del body
         document.body.innerHTML = doc.body.innerHTML;
-
+        
         // Opcionalmente, reemplazar también el head para incluir estilos específicos
         document.head.innerHTML = doc.head.innerHTML;
+        
+        // Crear un nuevo elemento de script para el kit de FontAwesome
+        const script = document.createElement('script');
+        script.src = "https://kit.fontawesome.com/81581fb069.js";
+        script.crossorigin = "anonymous";
+        
+        // Añadir el script al documento
+        document.head.appendChild(script);
+
         window.scrollTo(0, 0);
       }
     } else {
