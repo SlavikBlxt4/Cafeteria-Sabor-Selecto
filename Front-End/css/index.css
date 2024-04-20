@@ -21,6 +21,7 @@
 html {
 	font-size: 62.5%;
 	font-family: 'Poppins', sans-serif;
+	scroll-behavior: smooth;
 }
 
 * {
@@ -899,7 +900,7 @@ html {
 }
 
 .card-product {
-	background-color: #fff;
+	background-color: #ffffff;
 	padding: 2rem 3rem;
 	border-radius: 0.5rem;
 	cursor: pointer;
@@ -982,31 +983,31 @@ html {
 }
 
 .content-card-product {
+	background-color: #ffffff;
 	display: grid;
 	justify-items: center;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: repeat(4, min-content);
-	row-gap: 1rem;
+	grid-template-rows: repeat(4, 15px);
+	row-gap: 1.5rem;
 }
 
-.stars {
-	grid-row: 1/2;
-	grid-column: 1/-1;
-}
 
-.stars i {
-	font-size: 1.3rem;
-	color: var(--primary-color);
-}
 
 .content-card-product h3 {
-	grid-row: 2/3;
+	grid-row: 1/4;
 	grid-column: 1/-1;
-
-	font-weight: 400;
+	font-weight: 600;
 	font-size: 1.6rem;
 	margin-bottom: 1rem;
 	cursor: pointer;
+}
+
+
+.content-card-product p {
+	grid-row: 2/4;
+	grid-column: 1/-1;
+	font-size: 1.4rem;
+	color: #777;
 }
 
 .content-card-product h3:hover {
@@ -1016,11 +1017,11 @@ html {
 .add-cart {
 	justify-self: start;
 	border: 2px solid var(--primary-color);
-	padding: 0 1.65rem 0 1.65rem;
+	padding: 2rem 1.5rem 2rem 1.5rem;
 	border-radius: 50%;
 	cursor: pointer;
 	transition: all 0.4s ease;
-
+	grid-row: 4/4;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1040,17 +1041,15 @@ html {
 }
 
 .content-card-product .price {
-	justify-self: end;
 	align-self: center;
-
+	grid-row: 3/4;
 	font-size: 1.7rem;
 	font-weight: 600;
 }
 
 .content-card-product .price span {
 	font-size: 1.5rem;
-	font-weight: 400;
-	text-decoration: line-through;
+	font-weight: 800;
 	color: #777;
 	margin-left: 0.5rem;
 }

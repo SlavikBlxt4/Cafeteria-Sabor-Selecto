@@ -175,15 +175,27 @@ function createProductCards(products) {
   });
 }
 
+function updateDisplay(priceElement, disponibilidad) {
+  if (disponibilidad === false) {
+    priceElement.textContent = 'Sold out';
+  } else {
+    priceElement.textContent = '';
+  }
+}
 
 // Función para crear una tarjeta de producto
 function createProductCard(product) {
   // Crear el elemento de la tarjeta del producto
   const cardProduct = document.createElement('div');
   cardProduct.classList.add('card-product');
+  //cardProduct.setAttribute('id', 'product');
   if (product.category_id === 3) {
     cardProduct.style.width = '300px';
   }
+
+    // Check if product.descripcion is null and adjust the display accordingly
+    const productDescription = product.descripcion ? `<p>${product.descripcion}</p>` : '';
+
 
   // Agregar contenido a la tarjeta
   cardProduct.innerHTML = `
@@ -196,18 +208,24 @@ function createProductCard(product) {
           </div>
       </div>
       <div class="content-card-product">
-          <div class="stars">
+          <!-- <div class="stars">
               ${'*'.repeat(product.stars).split('').map(star => `<i class="fa-solid fa-star"></i>`).join('')}
               ${'*'.repeat(5 - product.stars).split('').map(star => `<i class="fa-regular fa-star"></i>`).join('')}
-          </div>
+          </div> --> 
           <h3>${product.nombre}</h3>
-          
+          ${productDescription}
+          <p class="price">${product.precio} <span></span></p>
           <span class="add-cart">
               <i class="fa-solid fa-bag-shopping"></i>
           </span>
-          <p class="price">${product.precio} <span>${product.precio}</span></p>
+          
       </div>
   `;
+
+
+  // Seleccionar el elemento span y actualizar la visualización
+  const priceElement = cardProduct.querySelector('.price span');
+  updateDisplay(priceElement, product.disponibilidad);
 
   return cardProduct;
   
@@ -228,12 +246,21 @@ function renderProducts(products) {
   });
 }
 
-// Ejemplo de uso:
-// Suponiendo que tienes una función fetchCoffee que recoge todos los cafés de la base de datos y devuelve una promesa
 
 
 
+/*function showDescription() {
+  document.getElementById('product').style.display = 'block';
+  document.getElementById('description').style.display = 'block';
+}
 
+function hideDescription() {
+  document.getElementById('product').style.display = 'none';
+  document.getElementById('description').style.display = 'none';
+}
+
+document.getElementById('product').addEventListener('click', showDescription);
+document.getElementById('description').addEventListener('click', hideDescription);*/
 
 
 
