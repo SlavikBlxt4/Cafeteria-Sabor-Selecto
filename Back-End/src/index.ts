@@ -65,7 +65,7 @@ interface AuthenticatedRequest extends Request {
 
 app.get("/coffee", async (req, res)=>{     
     const {rows} = await myPool.query(   
-        "SELECT * FROM coffee ORDER BY id ASC;;"
+        "SELECT * FROM cafe ORDER BY id_cafe ASC;;"
         
     );
     res.json(rows);
@@ -73,7 +73,7 @@ app.get("/coffee", async (req, res)=>{
 
 app.get("/category", async (req, res)=>{     
     const {rows} = await myPool.query(      
-        "SELECT * FROM category;"
+        "SELECT * FROM categoria;"
         
     );
     res.json(rows);
@@ -82,20 +82,20 @@ app.get("/category", async (req, res)=>{
 
 
 
- app.get("/coffee/:id_category", async (req, res)=>{    //query para obtener la lista de nombres de todos los cafes que pertenecen a una categoria en concreto
-    const {id_category} = req.params;
+ app.get("/coffee/:id_categoria", async (req, res)=>{    //query para obtener la lista de nombres de todos los cafes que pertenecen a una categoria en concreto
+    const {id_categoria} = req.params;
     const {rows} = await myPool.query(        
-    "SELECT * FROM coffee WHERE id_category= (SELECT id FROM category WHERE id = $1)", [id_category]
+    "SELECT * FROM cafe WHERE id_categoria= (SELECT id_categoria FROM categoria WHERE id_categoria = $1)", [id_categoria]
  );
     res.json(rows);
 });
 
-app.get("/favourites/:id_user", async (req, res) => { //query para obtener todos los cafes favoritos de un usuario en especifico
+/*app.get("/favourites/:id_user", async (req, res) => { //query para obtener todos los cafes favoritos de un usuario en especifico
     try {
         const { id_user } = req.params;
 
         const { rows } = await myPool.query(
-            "SELECT * FROM coffee WHERE coffee.id IN (SELECT id_coffee FROM coffee_cart WHERE id_user = $1);",
+            "SELECT * FROM cafe WHERE id_cafe IN (SELECT id_cafe FROM lista WHERE id_user = $1);",
             [id_user]
         );
 
@@ -104,9 +104,9 @@ app.get("/favourites/:id_user", async (req, res) => { //query para obtener todos
         console.error("Error al obtener cafés de la cesta:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
-});
+});*/
 
-app.post("/favourites", async (req, res) => { //metodo para permitir a un usuario agregar un cafe a favoritos
+/*app.post("/favourites", async (req, res) => { //metodo para permitir a un usuario agregar un cafe a favoritos
     try {
         const { id_coffee, id_user } = req.body; 
 
@@ -119,9 +119,9 @@ app.post("/favourites", async (req, res) => { //metodo para permitir a un usuari
         console.error("Error al agregar cafés a la cesta:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
-});
+});*/
 
-app.delete("/favourites/:id_coffee/:id_user", async (req, res) => { //metodo para permitir a un usuario eliminar un cafe de la cesta
+/*app.delete("/favourites/:id_coffee/:id_user", async (req, res) => { //metodo para permitir a un usuario eliminar un cafe de la cesta
     try {
         const { id_coffee, id_user } = req.params;
         await myPool.query(
@@ -133,7 +133,7 @@ app.delete("/favourites/:id_coffee/:id_user", async (req, res) => { //metodo par
         console.error("Error al eliminar café de la cesta:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
-});
+});*/
 
 
 
@@ -146,7 +146,7 @@ app.post('/users/login', async (req, res) => { //para logear a los usuarios
     }
 
     try {
-        const result = await myPool.query('SELECT * FROM users WHERE email = $1', [email]);
+        const result = await myPool.query('SELECT * FROM usuario WHERE email = $1', [email]);
         if (result.rows.length === 0) {
             return res.status(401).json({ mensaje: 'Email o contraseña incorrectos' });
         }
@@ -161,14 +161,14 @@ app.post('/users/login', async (req, res) => { //para logear a los usuarios
 
         // Create a JWT token if the password is correct
         const token = jwt.sign(
-            { userId: usuario.id, email: usuario.email },
+            { userId: usuario.id_usuario, email: usuario.email },
             secretKey,
             { expiresIn: '1h' }
             
         );
         
 
-        return res.status(200).json({ mensaje: 'Login exitoso', token, usuarioId: usuario.id });
+        return res.status(200).json({ mensaje: 'Login exitoso', token, usuarioId: usuario.id_usuario });
     } catch (error) {
         return res.status(500).json({ mensaje: 'Error al realizar el login', error });
     }
@@ -207,13 +207,13 @@ async function authenticateToken(req: AuthenticatedRequest, res: Response, next:
     const user = req.user;
     console.log(user);
     const token = req.query.token;
-    res.set('Authorization', 'Bearer ' + token);
+    console.log(token);
   
     // Realizar la consulta a la base de datos para verificar el id_rol del usuario
     try {
       const { userId } = user;
       console.log(userId); //indefinido
-      const result = await myPool.query('SELECT id_rol FROM users WHERE id = $1', [userId]);
+      const result = await myPool.query('SELECT id_rol FROM usuario WHERE id_usuario = $1', [userId]);
       console.log(result.rows);
   
       if (result.rows.length === 0) {
@@ -246,7 +246,7 @@ app.post('/users', async (req, res) => { //NUNCA meter usuarios a manija en la b
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-      const queryString = 'INSERT INTO users ("email", "password", "id_rol") VALUES($1, $2, 1)';
+      const queryString = 'INSERT INTO usuario ("email", "password", "id_rol") VALUES($1, $2, 1)';
       const values = [email, hashedPassword];
 
       await myPool.query(queryString, values);

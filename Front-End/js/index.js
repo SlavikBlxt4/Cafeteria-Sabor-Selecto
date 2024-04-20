@@ -7,7 +7,6 @@ let usuarioId;
 document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
   fetchCategories();
-  fetchFavouriteCoffees(1);
 
 });
 
@@ -63,7 +62,7 @@ document.getElementById('manager').addEventListener('click', function(){
   enlaceClicado('/private-area', 5500);
 });
 
-
+  
 
 
 
@@ -189,7 +188,7 @@ function createProductCard(product) {
   // Agregar contenido a la tarjeta
   cardProduct.innerHTML = `
       <div class="container-img">
-          <img src="${product.img}" />
+          <img src="${product.imagen}" />
           <div class="button-group">
               <span><i class="fa-regular fa-eye"></i></span>
               <span><i class="fa-regular fa-heart"></i></span>
@@ -201,12 +200,12 @@ function createProductCard(product) {
               ${'*'.repeat(product.stars).split('').map(star => `<i class="fa-solid fa-star"></i>`).join('')}
               ${'*'.repeat(5 - product.stars).split('').map(star => `<i class="fa-regular fa-star"></i>`).join('')}
           </div>
-          <h3>${product.name}</h3>
+          <h3>${product.nombre}</h3>
           
           <span class="add-cart">
               <i class="fa-solid fa-bag-shopping"></i>
           </span>
-          <p class="price">${product.price} <span>${product.price}</span></p>
+          <p class="price">${product.precio} <span>${product.precio}</span></p>
       </div>
   `;
 
@@ -266,13 +265,13 @@ document.getElementById('mix').addEventListener('click', () => renderCoffeesPerC
 document.getElementById('all').addEventListener('click', () => fetchCoffees());
 
 
-function fetchFavouriteCoffees(idUser){
+/*function fetchFavouriteCoffees(idUser){
   fetch(`http://localhost:3000/favourites/${idUser}`)
   .then(response => response.json())
   .then(data => {
       console.log(data);
   });
-}
+}*/
 
 
 async function addFavouriteCoffee(idUser, idCoffee){
