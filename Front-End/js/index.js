@@ -7,6 +7,7 @@ let usuarioId;
 document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
   fetchCategories();
+  fetchIdPedido(usuarioId); //misma funcion invocada en el login
 
 });
 
@@ -106,6 +107,7 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
         usuarioId=data.usuarioId;
         console.log(usuarioId);
         localStorage.setItem('usuarioId', usuarioId);
+        fetchIdPedido(usuarioId);
 
         cerrar('.login');
     }
@@ -168,6 +170,10 @@ document.getElementById('register-form').addEventListener('submit', async (event
       });
   }
 });
+
+
+
+
 
 function createProductCards(products) {
   products.forEach(product => {
@@ -347,6 +353,14 @@ async function deleteFavouriteCoffee(idUser, idCoffee){
 
 
 
+function fetchIdPedido(){
+  const user = JSON.parse(localStorage.getItem('usuarioId'));
+  fetch(`http://localhost:3000/pedido/${user}`)
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+  });
+}
 
 
 

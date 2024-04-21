@@ -257,4 +257,40 @@ app.post('/users', async (req, res) => { //NUNCA meter usuarios a manija en la b
     }
   });
 
+app.get('/id_usuario', async (req, res) => { //revisaremos la utilidad de esto
+    const { email } = req.query;
 
+    try {
+        const queryString = 'SELECT id_usuario FROM usuario WHERE email = $1';
+        const values = [email];
+
+        const { rows } = await myPool.query(queryString, values);
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        const { id_usuario } = rows[0];
+        res.status(200).json({ id_usuario });
+    } catch (error) {    
+        console.error('Failed to get user id:', error);
+        res.status(500).json({ error: 'Failed to get user id' });
+    }
+});
+
+app.get('/pedido/:id_usuario', async (req, res) => {
+    const { id_usuario } = req.params;
+    try {
+        const selectQueryString = 'SELECT * FROM PEDIDO WHERE estado=false AND id_usuario=$1';
+        const insertQueryString = 'INSERT INTO pedido (id_usuario, estado) VALUES ($1, false)';
+        const values = [id_usuario];
+        const selectResult = await myPool.query(selectQueryString, values);
+        if (selectResult.rows.length === 0) {
+            await myPool.query(insertQueryString, values);
+            return res.status(201).json({ message: 'Nuevo pedido creado' });
+
+        }
+        res.status(200).json(selectResult.rows);
+    } catch (error) {
+        console.error('Error handling /pedido/:id_usuario:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
