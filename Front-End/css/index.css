@@ -923,6 +923,8 @@ html {
 
 .container-img img {
 	width: 100%;
+	max-height: 125px;
+	padding-bottom: 20px;
 	
 }
 
@@ -989,6 +991,7 @@ html {
 	grid-template-columns: 1fr 1fr;
 	grid-template-rows: repeat(4, 15px);
 	row-gap: 1.5rem;
+	padding-bottom: 34px;
 }
 
 

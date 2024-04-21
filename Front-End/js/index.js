@@ -274,6 +274,27 @@ function fetchCategories(){
   });
 }
 
+
+//para que se quede verde el boton clickado
+
+function removeActiveClassFromSpans() {
+  document.querySelectorAll('.container-options span').forEach(span => {
+    span.classList.remove('active');
+  });
+}
+
+function setActiveClass(event) {
+  // Remove 'active' class from all spans
+  removeActiveClassFromSpans();
+  
+  // Add 'active' class to the clicked span
+  event.currentTarget.classList.add('active');
+}
+
+document.querySelectorAll('.container-options span').forEach(span => {
+  span.addEventListener('click', setActiveClass);
+});
+
 function renderCoffeesPerCategory(idCategory){
   fetch(`http://localhost:3000/coffee/${idCategory}`)
     .then(response => response.json())
@@ -281,7 +302,9 @@ function renderCoffeesPerCategory(idCategory){
         // Suponiendo que 'createProductCards' y/o 'renderProducts' son las funciones que ya tienes para renderizar los cafés
         createProductCards(data);
         renderProducts(data);
+        
     })
+          
     .catch(error => console.error('Error al obtener los cafés por categoría:', error));
 }
 
@@ -321,6 +344,15 @@ async function deleteFavouriteCoffee(idUser, idCoffee){
   const data = await response.json();
   console.log(data);
 } 
+
+
+
+
+
+
+
+
+
 
 
 
