@@ -65,7 +65,7 @@ interface AuthenticatedRequest extends Request {
 
 app.get("/coffee", async (req, res)=>{     
     const {rows} = await myPool.query(   
-        "SELECT * FROM cafe ORDER BY id_cafe ASC;;"
+        "SELECT * FROM cafe ORDER BY id_cafe ASC;"
         
     );
     res.json(rows);
@@ -85,7 +85,7 @@ app.get("/category", async (req, res)=>{
  app.get("/coffee/:id_categoria", async (req, res)=>{    //query para obtener la lista de nombres de todos los cafes que pertenecen a una categoria en concreto
     const {id_categoria} = req.params;
     const {rows} = await myPool.query(        
-    "SELECT * FROM cafe WHERE id_categoria= (SELECT id_categoria FROM categoria WHERE id_categoria = $1)", [id_categoria]
+    "SELECT * FROM cafe WHERE id_categoria= (SELECT id_categoria FROM categoria WHERE id_categoria = $1) ORDER BY id_cafe ASC", [id_categoria]
  );
     res.json(rows);
 });
