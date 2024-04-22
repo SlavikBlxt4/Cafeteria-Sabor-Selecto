@@ -28,7 +28,7 @@ const myPool = new Pool({
     user: "postgres",
     host: "cafeteria-bbdd.c9qmqmi86ft5.us-east-1.rds.amazonaws.com",
     database: "postgres",
-    password: "postgres",
+    password: "postgres", //commit de prueba
     port: 5432,
     ssl: {
         rejectUnauthorized: false,
