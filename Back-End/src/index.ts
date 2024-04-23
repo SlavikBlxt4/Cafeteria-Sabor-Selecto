@@ -20,15 +20,17 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'Intranet')));
 
 
-
+dotenv.config();
+const database_password = process.env.DATABASE_KEY;
+const secretKey = process.env.SECRET_KEY;
 
 
 
 const myPool = new Pool({
     user: "postgres",
-    host: "cafeteria-bbdd.c9qmqmi86ft5.us-east-1.rds.amazonaws.com",
+    host: "cafeteria-v2.c9qmqmi86ft5.us-east-1.rds.amazonaws.com",
     database: "postgres",
-    password: "postgres", //commit de prueba
+    password: database_password, //commit de prueba
     port: 5432,
     ssl: {
         rejectUnauthorized: false,
@@ -42,8 +44,7 @@ app.listen(PORT, ()=> {
 
 
 
-dotenv.config();
-const secretKey = process.env.SECRET_KEY;
+
 
 if (!secretKey) {
   throw new Error('La variable SECRET_KEY no está definida en el archivo .env');
