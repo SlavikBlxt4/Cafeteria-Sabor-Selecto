@@ -363,9 +363,39 @@ function fetchIdPedido(){
 }
 
 
+function getProductData(button) {
+  // Obtener el elemento padre más cercano que tenga la clase 'card-product'
+  var cardProduct = button.closest('.card-product');
+
+  // Recoger los datos del producto
+  var productName = cardProduct.querySelector('h3').textContent;
+  var productDescription = cardProduct.querySelector('p').textContent;
+  var productPrice = cardProduct.querySelector('.price').textContent;
+
+  // Crear objeto JSON con los datos
+  var productData = {
+    name: productName,
+    description: productDescription,
+    price: productPrice
+  };
+
+  // Convertir el objeto en una cadena JSON
+  var jsonData = JSON.stringify(productData);
+  return jsonData;
+}
 
 
-
+document.addEventListener('DOMContentLoaded', function() {
+  // Asegúrate de que el contenedor padre existe. Si no, reemplaza '.container-padre' con el selector adecuado.
+  document.querySelector('.container-products').addEventListener('click', function(event) {
+    // Comprueba si el clic fue dentro del botón de 'Añadir al Carrito'
+    var addCartButton = event.target.closest('.add-cart');
+    if (addCartButton) {
+      var productJSON = getProductData(addCartButton);
+      console.log(productJSON); // Aquí iría el código para procesar los datos del producto
+    }
+  });
+});
 
 
 
