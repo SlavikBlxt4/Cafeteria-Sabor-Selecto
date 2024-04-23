@@ -164,7 +164,7 @@ app.post('/users/login', async (req, res) => { //para logear a los usuarios
         const token = jwt.sign(
             { userId: usuario.id_usuario, email: usuario.email },
             secretKey,
-            { expiresIn: '1h' }
+            { expiresIn: '7d' }
             
         );
         
