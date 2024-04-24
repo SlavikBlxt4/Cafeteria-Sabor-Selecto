@@ -356,7 +356,26 @@ html {
   
   .cart-item {
 	display: flex;
+	justify-content: space-around;
 	gap: 10px;
+  }
+
+  .cart-item p{
+	font-size: 12px;
+  }
+
+  .cart-item-quantity{
+	display: flex;
+	align-items: center;
+	grid-gap: 1rem;
+  }
+
+  .cart-item button {
+	cursor: pointer;
+	width: 29px;
+	background-color: #4ac068;
+	border-radius: 20px;
+	border-color: transparent;
   }
   
   .cart-item img {

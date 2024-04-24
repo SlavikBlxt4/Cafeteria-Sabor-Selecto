@@ -392,10 +392,85 @@ document.addEventListener('DOMContentLoaded', function() {
     var addCartButton = event.target.closest('.add-cart');
     if (addCartButton) {
       var productJSON = getProductData(addCartButton);
-      console.log(productJSON); // Aquí iría el código para procesar los datos del producto
+      console.log(productJSON);
+      addProductToCart(productJSON); // Aquí iría el código para procesar los datos del producto
     }
   });
 });
+
+function addProductToCart(jsonData) {
+  // Parse the JSON data back to an object
+  var productData = JSON.parse(jsonData);
+
+  // Get the cart body container
+  var cartBody = document.querySelector('.cart-body');
+  if (!cartBody) {
+    console.error('Cart body element not found.');
+    return;
+  }
+
+  // Check if product is already in the cart based on product name
+  var existingProductElement = cartBody.querySelector(`.cart-item[data-name="${productData.name}"]`);
+  if (existingProductElement) {
+    // Product is already in the cart, increment quantity
+    var quantityElement = existingProductElement.querySelector('.quantity');
+    quantityElement.textContent = parseInt(quantityElement.textContent) + 1;
+  } else {
+    // Create a new div element for the product
+    var productElement = document.createElement('div');
+    productElement.classList.add('cart-item');
+    productElement.setAttribute('data-name', productData.name);
+
+    
+
+    // Add the product details to the new div
+    productElement.innerHTML = `
+      <h3>${productData.name}</h3>
+      <p class="product-price" data-unit-price="${productData.price}">$${productData.price}</p>
+      <div class="cart-item-quantity">
+        <button class="decrease-quantity">-</button>
+        <span class="quantity">1</span>
+        <button class="increase-quantity">+</button>
+      </div>
+    `;
+
+
+    const decreaseButton = productElement.querySelector('.decrease-quantity');
+    const increaseButton = productElement.querySelector('.increase-quantity');
+    const quantityElement = productElement.querySelector('.quantity');
+    const priceElement = productElement.querySelector('.product-price');
+    const unitPrice = parseFloat(productData.price);
+    
+    function updatePrice() {
+      const currentQuantity = parseInt(quantityElement.textContent, 10);
+      const totalPrice = (unitPrice * currentQuantity).toFixed(2); // Keep two decimal places
+      priceElement.textContent = `$${totalPrice}`;
+    }
+
+    if (decreaseButton && increaseButton && quantityElement && priceElement) {
+      decreaseButton.addEventListener('click', function() {
+        const currentQuantity = parseInt(quantityElement.textContent, 10);
+        if (currentQuantity > 1) {
+          quantityElement.textContent = currentQuantity - 1;
+          updatePrice(); // Update the price when quantity decreases
+        }
+      });
+
+      increaseButton.addEventListener('click', function() {
+        const currentQuantity = parseInt(quantityElement.textContent, 10);
+        quantityElement.textContent = currentQuantity + 1;
+        updatePrice(); // Update the price when quantity increases
+      });
+    } else {
+      console.error('Quantity buttons, quantity element, or price element not found.');
+    }
+
+    // Append the new product div to the cart body
+    cartBody.appendChild(productElement);
+  }
+}
+
+
 
 
 
@@ -405,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
 //* selectors
 
 const selectors = {
-  /*products: document.querySelector(".products"), //* el único que habría que modificar*/
+  products: document.querySelector(".card-product"), //* el único que habría que modificar*/
   cartBtn: document.querySelector(".cart-btn"),
   cartQty: document.querySelector(".cart-qty"),
   cartClose: document.querySelector(".cart-close"),
@@ -438,7 +513,7 @@ const initStore = () => {
   /*loadCart();
   
   loadProducts("https://fakestoreapi.com/products")
-    .then(renderProducts)
+    .then(renderCartProducts)
     .finally(renderCart);*/
 };
 
@@ -456,11 +531,11 @@ const clearCart = () => {
   cart = [];
   saveCart();
   renderCart();
-  renderProducts();
+  renderCartProducts();
   setTimeout(hideCart, 500);
 };
 
-/*
+
 const addToCart = (e) => {
   if (e.target.hasAttribute("data-id")) {
     const id = parseInt(e.target.dataset.id);
@@ -473,7 +548,7 @@ const addToCart = (e) => {
 
     cart.push({ id, qty: 1 });
     saveCart();
-    renderProducts();
+    renderCartProducts();
     renderCart();
     showCart();
   }
@@ -485,7 +560,7 @@ const removeFromCart = (id) => {
   // if the last item is remove, close the cart
   cart.length === 0 && setTimeout(hideCart, 500);
 
-  renderProducts();
+  renderCartProducts();
 };
 
 const increaseQty = (id) => {
@@ -578,7 +653,7 @@ const renderCart = () => {
     .join("");
 };
 
-const renderProducts = () => {
+const renderCartProducts = () => {
   selectors.products.innerHTML = products
     .map((product) => {
       const { id, title, image, price } = product;
@@ -639,7 +714,7 @@ Number.prototype.format = function () {
     currency: "USD",
   });
 };
-*/
+
 
 
 // Función para cerrar las cartas de login y registro
