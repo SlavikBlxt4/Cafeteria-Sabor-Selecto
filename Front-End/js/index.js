@@ -426,7 +426,7 @@ function addProductToCart(jsonData) {
     // Add the product details to the new div
     productElement.innerHTML = `
       <h3>${productData.name}</h3>
-      <p class="product-price" data-unit-price="${productData.price}">$${productData.price}</p>
+      <p class="product-price">${productData.price}</p>
       <div class="cart-item-quantity">
         <button class="decrease-quantity">-</button>
         <span class="quantity">1</span>
@@ -438,28 +438,21 @@ function addProductToCart(jsonData) {
     const decreaseButton = productElement.querySelector('.decrease-quantity');
     const increaseButton = productElement.querySelector('.increase-quantity');
     const quantityElement = productElement.querySelector('.quantity');
-    const priceElement = productElement.querySelector('.product-price');
-    const unitPrice = parseFloat(productData.price);
-    
-    function updatePrice() {
-      const currentQuantity = parseInt(quantityElement.textContent, 10);
-      const totalPrice = (unitPrice * currentQuantity).toFixed(2); // Keep two decimal places
-      priceElement.textContent = `$${totalPrice}`;
-    }
 
-    if (decreaseButton && increaseButton && quantityElement && priceElement) {
+    
+
+
+    if (decreaseButton && increaseButton && quantityElement) {
       decreaseButton.addEventListener('click', function() {
         const currentQuantity = parseInt(quantityElement.textContent, 10);
         if (currentQuantity > 1) {
           quantityElement.textContent = currentQuantity - 1;
-          updatePrice(); // Update the price when quantity decreases
         }
       });
 
       increaseButton.addEventListener('click', function() {
         const currentQuantity = parseInt(quantityElement.textContent, 10);
-        quantityElement.textContent = currentQuantity + 1;
-        updatePrice(); // Update the price when quantity increases
+        quantityElement.textContent = currentQuantity + 1; 
       });
     } else {
       console.error('Quantity buttons, quantity element, or price element not found.');
