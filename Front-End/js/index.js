@@ -414,12 +414,19 @@ function addProductToCart(jsonData) {
   if (existingProductElement) {
     // Product is already in the cart, increment quantity
     var quantityElement = existingProductElement.querySelector('.quantity');
-    quantityElement.textContent = parseInt(quantityElement.textContent) + 1;
+    var currentQuantity = parseInt(quantityElement.textContent) + 1;
+    quantityElement.textContent = currentQuantity;
+
+    // Encuentra el elemento de precio y actualiza el precio total
+    var priceElement = existingProductElement.querySelector('.product-price');
+    var unitPrice = parseFloat(productData.price.replace(/[^0-9.-]+/g,""));
+    priceElement.textContent = 'Precio Total: ' + (unitPrice * currentQuantity).toFixed(2);
   } else {
     // Create a new div element for the product
     var productElement = document.createElement('div');
     productElement.classList.add('cart-item');
     productElement.setAttribute('data-name', productData.name);
+    productElement.setAttribute('data-unitPrice', productData.price);
 
     
 
@@ -434,6 +441,9 @@ function addProductToCart(jsonData) {
       </div>
     `;
 
+    productElement.querySelector('.product-price').textContent = 'Precio Total: ' + productData.price;
+
+    
 
     const decreaseButton = productElement.querySelector('.decrease-quantity');
     const increaseButton = productElement.querySelector('.increase-quantity');
@@ -447,12 +457,14 @@ function addProductToCart(jsonData) {
         const currentQuantity = parseInt(quantityElement.textContent, 10);
         if (currentQuantity > 1) {
           quantityElement.textContent = currentQuantity - 1;
+          updatePrice(productElement, -1); // Disminuye la cantidad en 1
         }
       });
 
       increaseButton.addEventListener('click', function() {
         const currentQuantity = parseInt(quantityElement.textContent, 10);
         quantityElement.textContent = currentQuantity + 1; 
+        updatePrice(productElement, 1); // Aumenta la cantidad en 1
       });
     } else {
       console.error('Quantity buttons, quantity element, or price element not found.');
@@ -463,6 +475,26 @@ function addProductToCart(jsonData) {
   }
 }
 
+
+function updatePrice(productElement, change) {
+  var quantityElement = productElement.querySelector('.quantity');
+  var priceElement = productElement.querySelector('.product-price');
+  var unitPrice = parseMoney(productElement.dataset.unitprice);
+  var currentQuantity = parseInt(quantityElement.textContent);
+
+  // Asegúrate de que la cantidad no sea menor que 1
+  currentQuantity = currentQuantity < 1 ? 1 : currentQuantity;
+  quantityElement.textContent = currentQuantity;
+  var totalPrice = unitPrice * currentQuantity;
+
+  // Actualiza el precio total
+  priceElement.textContent = 'Precio Total: $' + totalPrice.toFixed(2);
+}
+
+function parseMoney(value) {
+  // Reemplaza los símbolos de moneda y comas, luego convierte a número flotante
+  return parseFloat(value.replace(/[^0-9.-]+/g, ''));
+}
 
 
 
