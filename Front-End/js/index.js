@@ -60,7 +60,7 @@ document.getElementById('employee').addEventListener('click', function(){
   enlaceClicado('/private-area', 3000);
 });
 document.getElementById('manager').addEventListener('click', function(){
-  enlaceClicado('/private-area', 5500);
+  enlaceClicado('/private-area', 3000);
 });
 
   
@@ -181,9 +181,17 @@ function createProductCards(products) {
   });
 }
 
+
+
+
+
+
 function updateDisplay(priceElement, disponibilidad) {
   if (disponibilidad === false) {
     priceElement.textContent = 'Sold out';
+
+
+
   } else {
     priceElement.textContent = '';
   }
@@ -232,6 +240,9 @@ function createProductCard(product) {
   // Seleccionar el elemento span y actualizar la visualización
   const priceElement = cardProduct.querySelector('.price span');
   updateDisplay(priceElement, product.disponibilidad);
+  if(product.disponibilidad === false){
+    cardProduct.querySelector('.add-cart').style.display = 'none';
+  }
 
   return cardProduct;
   
@@ -495,6 +506,9 @@ function parseMoney(value) {
   // Reemplaza los símbolos de moneda y comas, luego convierte a número flotante
   return parseFloat(value.replace(/[^0-9.-]+/g, ''));
 }
+
+
+
 
 
 
