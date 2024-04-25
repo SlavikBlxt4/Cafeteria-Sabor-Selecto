@@ -201,9 +201,17 @@ html {
 	justify-content: center;
 	text-align: center;
 	gap: 1rem;
-
 }
 
+.container-noticias a{
+	font-size: 1.7rem;
+	font-weight: normal;
+	color: #000000;
+}
+
+.container-noticias a:hover{
+	color: #4ac068;
+}
 
 /* ********************************** */
 /*            CONTACTO                */

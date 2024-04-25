@@ -115,6 +115,7 @@ html {
 	border-bottom: 3px solid #f3f3f7;
 	border-image: linear-gradient(to right, transparent, #f3f3f7, #f3f3f7,#f3f3f7, transparent); /* Aplica una imagen de borde que cubre el 80% de la longitud */
     border-image-slice: 1; /* Establece la división de la imagen del borde */
+	max-width: 60%;
 }
 
 .top-categories h1{
@@ -122,6 +123,9 @@ html {
 }
 
 .container-categories p{
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+	font-size: 1.4rem;
 	text-align: justify;
 }
 
@@ -370,6 +374,15 @@ html {
 }
 
 
+/* ********************************** */
+/*       MEDIA QUERIES -- 1250px       */
+/* ********************************** */
+@media (max-width: 1450px) {
+	.top-categories{
+		max-width: 70%;
+	}
+}
+
 
 /* ********************************** */
 /*       MEDIA QUERIES -- 1250px       */
@@ -457,7 +470,6 @@ html {
 
 	/* Sección categorías */
 	.top-categories{
-		padding-top: 6rem;
 		margin-bottom: 2rem;
 		gap: 3rem
 	}
@@ -536,9 +548,12 @@ html {
 
 	/* Sección categorías */
 	.top-categories{
-		padding-top: 6rem;
 		margin-bottom: 2rem;
 		gap: 3rem
+	}
+
+	.top-categories p{
+		padding-top: 0rem;
 	}
 
 	.container-categories video,
