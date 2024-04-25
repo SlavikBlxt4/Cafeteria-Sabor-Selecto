@@ -267,79 +267,29 @@ html {
 	display: flex;
 	flex-direction: column;
 	gap: 2rem;
-	margin-bottom: 3rem;
+	padding-bottom: 9rem;
+	border-bottom: 3px solid #f3f3f7;
+	border-image: linear-gradient(to right, transparent, #f3f3f7, #f3f3f7,#f3f3f7, transparent); /* Aplica una imagen de borde que cubre el 80% de la longitud */
+    border-image-slice: 1; /* Establece la división de la imagen del borde */
 }
 
 .container-categories {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 3rem;
-}
-
-.card-category {
-	height: 20rem;
 	display: flex;
-	flex-direction: column;
-	align-items: center;
 	justify-content: center;
+}
+
+.container-categories video{
+	max-width: 80%;
 	border-radius: 2rem;
-	gap: 2rem;
 }
 
-.category-moca {
-	background-image: linear-gradient(#00000080, #00000080),
-		url('../images/Taza\ cafe\ 5.jpg');
-	background-size: cover;
-	background-position: bottom;
-	background-repeat: no-repeat;
+.container-categories img{
+	max-width: 80%;
+	border: 2px solid #dab07588;
+	border-radius: 2rem;
 }
 
-.category-capuchino {
-	background-image: linear-gradient(#00000080, #00000080),
-		url('../images/Granos\ de\ cafe\ 2.jpg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-}
 
-.category-expreso {
-	background-image: linear-gradient(#00000080, #00000080),
-		url('../images/Campo\ 2.jpg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
-}
-
-.card-category p {
-	font-size: 2.5rem;
-	color: #fff;
-	text-transform: capitalize;
-	position: relative;
-}
-
-.card-category p::after {
-	content: '';
-	width: 2.5rem;
-	height: 2px;
-	background-color: #fff;
-	position: absolute;
-	bottom: -1rem;
-	left: 50%;
-	transform: translate(-50%, 50%);
-}
-
-.card-category span {
-	font-size: 1.6rem;
-	cursor: pointer;
-}
-.card-category span a {
-	text-decoration: none;
-	color: #fff;
-}
-
-.card-category span a:hover {
-	color: var(--primary-color);
-}
 
 /* ********************************** */
 /*              FEATURES              */
