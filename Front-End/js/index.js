@@ -431,7 +431,7 @@ function addProductToCart(jsonData) {
     // Encuentra el elemento de precio y actualiza el precio total
     var priceElement = existingProductElement.querySelector('.product-price');
     var unitPrice = parseMoney(productData.price);
-    priceElement.textContent = 'Precio Total: $' + (unitPrice * currentQuantity).toFixed(2);
+    priceElement.textContent = '$' + (unitPrice * currentQuantity).toFixed(2);
     calculateTotal()
   } else {
     // Create a new div element for the product
@@ -454,7 +454,7 @@ function addProductToCart(jsonData) {
       </div>
     `;
 
-    productElement.querySelector('.product-price').textContent = 'Precio Total: ' + productData.price;
+    productElement.querySelector('.product-price').textContent = productData.price;
 
     
 
@@ -497,18 +497,38 @@ function addProductToCart(jsonData) {
 
 function calculateTotal(){
   var cartItems = document.querySelectorAll('.cart-item');
-  var total = 0;
+  var subtotal = 0;
   cartItems.forEach(function(item){
-      var price = parseMoney(item.dataset.unitprice)
+      var price = parseMoney(item.dataset.unitprice);
       var quantity = parseInt(item.querySelector('.quantity').textContent);
-      total += price * quantity;
+      subtotal += price * quantity;
   });
+  // Calculate tax (21% of subtotal)
+  var tax = subtotal * 0.21;
+  // Calculate total with tax
+  var total = subtotal + tax;
+
   var totalPriceElement = document.getElementById('total-price');
   if (totalPriceElement) {
-      totalPriceElement.textContent = '$' + total.toFixed(2);
+      // Update the text content to include the tax and the message
+      totalPriceElement.textContent = '$' + total.toFixed(2) + ' (IVA included)';
   }
   return total;
 }
+
+
+function clearCart(){
+  var cartItems = document.querySelectorAll('.cart-item');
+  for (var i = 0; i < cartItems.length; i++) {
+    var item = cartItems[i];
+    item.parentNode.removeChild(item);
+  }
+}
+
+document.getElementById("cart-clear").addEventListener("click", function(){
+    clearCart();
+    calculateTotal();
+});
 
 
 
@@ -527,7 +547,7 @@ function updatePrice(productElement, change) {
   var totalPrice = unitPrice * currentQuantity;
 
   // Actualiza el precio total
-  priceElement.textContent = 'Precio Total: $' + totalPrice.toFixed(2);
+  priceElement.textContent = '$' + totalPrice.toFixed(2);
 }
 
 function parseMoney(value) {
@@ -594,13 +614,7 @@ const hideCart = () => {
   selectors.cartOverlay.classList.remove("show");
 };
 
-const clearCart = () => {
-  cart = [];
-  saveCart();
-  renderCart();
-  renderCartProducts();
-  setTimeout(hideCart, 500);
-};
+
 
 
 const addToCart = (e) => {
