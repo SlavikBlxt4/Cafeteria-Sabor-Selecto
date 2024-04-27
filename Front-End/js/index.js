@@ -432,6 +432,7 @@ function addProductToCart(jsonData) {
     var priceElement = existingProductElement.querySelector('.product-price');
     var unitPrice = parseMoney(productData.price);
     priceElement.textContent = 'Precio Total: $' + (unitPrice * currentQuantity).toFixed(2);
+    calculateTotal()
   } else {
     // Create a new div element for the product
     var productElement = document.createElement('div');
@@ -470,8 +471,10 @@ function addProductToCart(jsonData) {
         if (currentQuantity > 1) {
           quantityElement.textContent = currentQuantity - 1;
           updatePrice(productElement, -1); // Disminuye la cantidad en 1
+          calculateTotal()
         } else{
           productElement.remove();
+          calculateTotal()
         
         }
       });
@@ -480,6 +483,7 @@ function addProductToCart(jsonData) {
         const currentQuantity = parseInt(quantityElement.textContent, 10);
         quantityElement.textContent = currentQuantity + 1; 
         updatePrice(productElement, 1); // Aumenta la cantidad en 1
+        calculateTotal()
       });
     } else {
       console.error('Quantity buttons, quantity element, or price element not found.');
@@ -487,20 +491,24 @@ function addProductToCart(jsonData) {
 
     // Append the new product div to the cart body
     cartBody.appendChild(productElement);
+    calculateTotal()
   }
 }
 
 function calculateTotal(){
-    var cartItems = document.querySelectorAll('.cart-item');
-    var total = 0;
-    cartItems.forEach(function(item){
-        var price = parseFloat(item.querySelector('.product-price').textContent.replace('$', ''));
-        var quantity = parseInt(item.querySelector('.quantity').textContent);
-        total += price * quantity;
-    });
-    return total;
-} 
-
+  var cartItems = document.querySelectorAll('.cart-item');
+  var total = 0;
+  cartItems.forEach(function(item){
+      var price = parseMoney(item.dataset.unitprice)
+      var quantity = parseInt(item.querySelector('.quantity').textContent);
+      total += price * quantity;
+  });
+  var totalPriceElement = document.getElementById('total-price');
+  if (totalPriceElement) {
+      totalPriceElement.textContent = '$' + total.toFixed(2);
+  }
+  return total;
+}
 
 
 
