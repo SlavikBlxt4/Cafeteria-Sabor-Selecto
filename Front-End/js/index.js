@@ -430,21 +430,22 @@ function addProductToCart(jsonData) {
 
     // Encuentra el elemento de precio y actualiza el precio total
     var priceElement = existingProductElement.querySelector('.product-price');
-    var unitPrice = parseFloat(productData.price.replace(/[^0-9.-]+/g,""));
-    priceElement.textContent = 'Precio Total: ' + (unitPrice * currentQuantity).toFixed(2);
+    var unitPrice = parseMoney(productData.price);
+    priceElement.textContent = 'Precio Total: $' + (unitPrice * currentQuantity).toFixed(2);
   } else {
     // Create a new div element for the product
     var productElement = document.createElement('div');
     productElement.classList.add('cart-item');
     productElement.setAttribute('data-name', productData.name);
     productElement.setAttribute('data-unitPrice', productData.price);
+    var productPriceToFloat = parseMoney(productData.price);
 
     
 
     // Add the product details to the new div
     productElement.innerHTML = `
       <h3>${productData.name}</h3>
-      <p class="product-price">${productData.price}</p>
+      <p class="product-price">$${productPriceToFloat}</p>
       <div class="cart-item-quantity">
         <button class="decrease-quantity">-</button>
         <span class="quantity">1</span>
@@ -469,6 +470,9 @@ function addProductToCart(jsonData) {
         if (currentQuantity > 1) {
           quantityElement.textContent = currentQuantity - 1;
           updatePrice(productElement, -1); // Disminuye la cantidad en 1
+        } else{
+          productElement.remove();
+        
         }
       });
 
@@ -485,6 +489,22 @@ function addProductToCart(jsonData) {
     cartBody.appendChild(productElement);
   }
 }
+
+function calculateTotal(){
+    var cartItems = document.querySelectorAll('.cart-item');
+    var total = 0;
+    cartItems.forEach(function(item){
+        var price = parseFloat(item.querySelector('.product-price').textContent.replace('$', ''));
+        var quantity = parseInt(item.querySelector('.quantity').textContent);
+        total += price * quantity;
+    });
+    return total;
+} 
+
+
+
+
+
 
 
 function updatePrice(productElement, change) {
@@ -651,8 +671,7 @@ const renderCart = () => {
   selectors.cartQty.textContent = cartQty;
   selectors.cartQty.classList.toggle("visible", cartQty);
 
-  // show cart total
-  selectors.cartTotal.textContent = calculateTotal().format();
+
 
   // show empty cart
   if (cart.length === 0) {
@@ -735,17 +754,7 @@ const loadProducts = async (apiURL) => {
 
 //* helper functions
 
-const calculateTotal = () => {
-  return cart
-    .map(({ id, qty }) => {
-      const { price } = products.find((x) => x.id === id);
 
-      return qty * price;
-    })
-    .reduce((sum, number) => {
-      return sum + number;
-    }, 0);
-};
 
 Number.prototype.format = function () {
   return this.toLocaleString("en-US", {
