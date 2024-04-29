@@ -53,23 +53,27 @@ function fetchCategories(){
 
 function fetchCoffees(){
   // Check if the coffee data is already stored in localStorage
-  let storedCoffees = localStorage.getItem('coffees');
+  let storedCoffees = sessionStorage.getItem('coffees');
   if (storedCoffees) {
     storedCoffees = JSON.parse(storedCoffees);
     createProductCards(storedCoffees);
-    renderProducts(storedCoffees);
+    clearCoffeesSmoothly(() => renderProducts(storedCoffees));
   } else {
     // If not present in localStorage, fetch from the database and store it
     fetch('http://localhost:3000/coffee')
     .then(response => response.json())
     .then(data => {
         console.log(data);
-        localStorage.setItem('coffees', JSON.stringify(data));
+        sessionStorage.setItem('coffees', JSON.stringify(data));
         createProductCards(data);
         renderProducts(data);
     });
   }
 }
+
+
+const ws = new WebSocket('ws://localhost:8080');
+
 
 // Agregar un evento de clic al enlace para manejarlo con la función enlaceClicado
 document.getElementById('employee').addEventListener('click', function(){
@@ -231,11 +235,6 @@ function createProductCard(product) {
   cardProduct.innerHTML = `
       <div class="container-img">
           <img src="${product.imagen}" />
-          <div class="button-group">
-              <span><i class="fa-regular fa-eye"></i></span>
-              <span><i class="fa-regular fa-heart"></i></span>
-              <span><i class="fa-solid fa-code-compare"></i></span>
-          </div>
       </div>
       <div class="content-card-product">
           <!-- <div class="stars">
@@ -275,6 +274,7 @@ function renderProducts(products) {
   // Crea y agrega cada tarjeta de producto al contenedor
   products.forEach(product => {
       const productCard = createProductCard(product);
+      productCard.classList.add('fade-in');
       containerProducts.appendChild(productCard);
   });
 }
@@ -311,7 +311,7 @@ document.querySelectorAll('.container-options span').forEach(span => {
 function renderCoffeesPerCategory(idCategory){
 
     // Check if the coffee data is already stored in localStorage
-    let storedCoffees = localStorage.getItem('coffees');
+    let storedCoffees = sessionStorage.getItem('coffees');
     if (storedCoffees) {
       storedCoffees = JSON.parse(storedCoffees);
       const filteredCoffees = storedCoffees.filter(coffee => coffee.id_categoria === idCategory);
@@ -322,7 +322,7 @@ function renderCoffeesPerCategory(idCategory){
       .then(response => response.json())
       .then(data => {
           console.log(data);
-          localStorage.setItem('coffees', JSON.stringify(data));
+          sessionStorage.setItem('coffees', JSON.stringify(data));
           const filteredCoffees = data.filter(coffee => coffee.id_categoria === idCategory);
           renderProducts(filteredCoffees);
       });
@@ -694,11 +694,11 @@ const updateCart = (e) => {
 };
 
 const saveCart = () => {
-  localStorage.setItem("online-store", JSON.stringify(cart));
+  sessionStorage.setItem("online-store", JSON.stringify(cart));
 };
 
 const loadCart = () => {
-  cart = JSON.parse(localStorage.getItem("online-store")) || [];
+  cart = JSON.parse(sessionStorage.getItem("online-store")) || [];
 };
 
 //* render functions

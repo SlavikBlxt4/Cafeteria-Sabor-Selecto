@@ -1074,6 +1074,7 @@ html {
 }
 
 .content-card-product .price span {
+	color: #bd0f0f !important;
 	font-size: 1.5rem;
 	font-weight: 800;
 	color: #777;

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
+import WebSocket from 'ws';
 
 
 
@@ -22,6 +23,9 @@ app.use(express.static(path.join(__dirname, 'Intranet')));
 
 dotenv.config();
 const database_password = process.env.DATABASE_KEY;
+if (database_password === undefined) {
+    throw new Error('The database password is not set.');
+  }
 const secretKey = process.env.SECRET_KEY;
 
 
@@ -36,6 +40,70 @@ const myPool = new Pool({
         rejectUnauthorized: false,
     },
 });
+
+interface Data {
+    [key: string]: any; // Puedes definir una estructura más específica según tus datos
+  }
+
+
+
+
+
+const server = new WebSocket.Server({ port: 8080 });
+
+// Función para manejar la conexión de WebSocket
+// Función para enviar datos a todos los clientes conectados
+const enviarATodos = (datos: Data) => {
+    server.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(datos));
+      }
+    });
+  };
+
+  // Evento para manejar conexiones entrantes
+// Event listener for new WebSocket connections
+server.on('connection', (ws) => {
+    console.log('New client connected');
+  
+    // You can also listen to messages from the client if needed
+    ws.on('message', (message) => {
+      console.log(`Received message: ${message}`);
+    });
+  
+    // Handle client disconnection
+    ws.on('close', () => {
+      console.log('Client disconnected');
+    });
+  });
+
+  function sendUpdates(data: any) {
+    enviarATodos(data);
+  }
+  
+  // Example data to send
+  const data = { message: 'Hello from the server!' };
+  sendUpdates(data);
+
+
+  myPool.connect((err, client) => {
+    if (err) {
+      console.error('Error connecting to pg', err.stack);
+    } else {
+      if (client) {
+        client.on('notification', (msg) => {
+        console.log('Database notification:', msg);
+          sendUpdates({ message: 'Database updated' });
+        });
+  
+        client.query('LISTEN my_channel');
+      } else {
+        console.error('Client is undefined');
+      }
+    }
+  });
+  
+
 
 app.listen(PORT, ()=> {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
