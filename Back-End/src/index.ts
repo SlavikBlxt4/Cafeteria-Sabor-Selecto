@@ -68,8 +68,10 @@ app.get("/coffee", async (req, res)=>{
     const {rows} = await myPool.query(   
         "SELECT * FROM cafe ORDER BY id_cafe ASC;"
         
+        
     );
     res.json(rows);
+    console.log("Cafes pedidos");
 });
 
 app.get("/category", async (req, res)=>{     
@@ -89,6 +91,7 @@ app.get("/category", async (req, res)=>{
     "SELECT * FROM cafe WHERE id_categoria= (SELECT id_categoria FROM categoria WHERE id_categoria = $1) ORDER BY id_cafe ASC", [id_categoria]
  );
     res.json(rows);
+    console.log("Cafes por categoria pedidos");
 });
 
 /*app.get("/favourites/:id_user", async (req, res) => { //query para obtener todos los cafes favoritos de un usuario en especifico

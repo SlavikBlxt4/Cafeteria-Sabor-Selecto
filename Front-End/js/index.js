@@ -43,16 +43,32 @@ function enlaceClicado(url, puerto) {
   window.location.href = `${urlConPuerto}?token=${encodeURIComponent(token)}`;
  
 }
-
-
-function fetchCoffees(){
-  fetch('http://localhost:3000/coffee')
+function fetchCategories(){
+  fetch('http://localhost:3000/category')
   .then(response => response.json())
   .then(data => {
       console.log(data);
-      createProductCards(data);
-      renderProducts(data);
   });
+}
+
+function fetchCoffees(){
+  // Check if the coffee data is already stored in localStorage
+  let storedCoffees = localStorage.getItem('coffees');
+  if (storedCoffees) {
+    storedCoffees = JSON.parse(storedCoffees);
+    createProductCards(storedCoffees);
+    renderProducts(storedCoffees);
+  } else {
+    // If not present in localStorage, fetch from the database and store it
+    fetch('http://localhost:3000/coffee')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        localStorage.setItem('coffees', JSON.stringify(data));
+        createProductCards(data);
+        renderProducts(data);
+    });
+  }
 }
 
 // Agregar un evento de clic al enlace para manejarlo con la función enlaceClicado
@@ -266,30 +282,10 @@ function renderProducts(products) {
 
 
 
-/*function showDescription() {
-  document.getElementById('product').style.display = 'block';
-  document.getElementById('description').style.display = 'block';
-}
-
-function hideDescription() {
-  document.getElementById('product').style.display = 'none';
-  document.getElementById('description').style.display = 'none';
-}
-
-document.getElementById('product').addEventListener('click', showDescription);
-document.getElementById('description').addEventListener('click', hideDescription);*/
 
 
 
 
-
-function fetchCategories(){
-  fetch('http://localhost:3000/category')
-  .then(response => response.json())
-  .then(data => {
-      console.log(data);
-  });
-}
 
 
 //para que se quede verde el boton clickado
@@ -313,18 +309,41 @@ document.querySelectorAll('.container-options span').forEach(span => {
 });
 
 function renderCoffeesPerCategory(idCategory){
-  fetch(`http://localhost:3000/coffee/${idCategory}`)
-    .then(response => response.json())
-    .then(data => {
-        // Suponiendo que 'createProductCards' y/o 'renderProducts' son las funciones que ya tienes para renderizar los cafés
-        createProductCards(data);
-        renderProducts(data);
-        
-    })
-          
-    .catch(error => console.error('Error al obtener los cafés por categoría:', error));
+
+    // Check if the coffee data is already stored in localStorage
+    let storedCoffees = localStorage.getItem('coffees');
+    if (storedCoffees) {
+      storedCoffees = JSON.parse(storedCoffees);
+      const filteredCoffees = storedCoffees.filter(coffee => coffee.id_categoria === idCategory);
+      clearCoffeesSmoothly(() => renderProducts(filteredCoffees));
+    } else {
+      // If not present in localStorage, fetch from the database and store it
+      fetch(`http://localhost:3000/coffee/${idCategory}`)
+      .then(response => response.json())
+      .then(data => {
+          console.log(data);
+          localStorage.setItem('coffees', JSON.stringify(data));
+          const filteredCoffees = data.filter(coffee => coffee.id_categoria === idCategory);
+          renderProducts(filteredCoffees);
+      });
+    }
+
+
+    
+
 }
 
+function clearCoffeesSmoothly(callback) {
+  const coffeeContainer = document.querySelector('.container-products');
+  coffeeContainer.classList.add('fade-out');
+
+  coffeeContainer.addEventListener('animationend', function onAnimationEnd() {
+    coffeeContainer.innerHTML = ''; // Clear the container after the fade out
+    coffeeContainer.classList.remove('fade-out'); // Remove the class for future use
+    coffeeContainer.removeEventListener('animationend', onAnimationEnd); // Clean up the listener
+    callback(); // Execute the callback function after the animation
+  });
+}
 
 document.getElementById('capsules').addEventListener('click', () => renderCoffeesPerCategory(1));
 document.getElementById('boxes').addEventListener('click', () => renderCoffeesPerCategory(2));
