@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
   fetchCategories();
   fetchIdPedido(usuarioId); //misma funcion invocada en el login
+  
 
 });
 
@@ -72,7 +73,7 @@ function fetchCoffees(){
 }
 
 
-const ws = new WebSocket('ws://localhost:8080');
+
 
 
 // Agregar un evento de clic al enlace para manejarlo con la función enlaceClicado
@@ -200,6 +201,29 @@ function createProductCards(products) {
     createProductCard(product);
   });
 }
+
+
+function actualizarDatos() {
+  // Realizar un fetch a la API para obtener los datos actualizados
+  fetch('http://localhost:3000/coffee')
+    .then(response => response.json())
+    .then(datos => {
+      // Comparar si los datos recibidos son diferentes a los almacenados en sessionStorage
+      if (JSON.stringify(sessionStorage.getItem('coffees')) !== JSON.stringify(datos)) {
+        // Actualizar sessionStorage con los nuevos datos
+        sessionStorage.setItem('coffees', JSON.stringify(datos));
+        createProductCards(datos);
+        renderProducts(datos);
+      }
+    })
+    .catch(error => console.error('Error al actualizar datos:', error));
+}
+
+
+
+
+
+
 
 
 
