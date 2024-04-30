@@ -1303,6 +1303,7 @@ textarea {
     border-radius: 5px;
     resize: none;  /*evitar que se pueda modificar el tamaño*/
 	font-family: inherit;
+	font-size: 1.4rem;
 }
 
 #boton_formulario {
