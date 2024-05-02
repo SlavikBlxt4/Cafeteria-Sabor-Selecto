@@ -1912,6 +1912,22 @@ textarea {
 	}
 }
 
+
+
+@media (max-width: 509px) {
+	.content-card-product{
+		position: relative;
+	}
+	.add-cart{
+		position: absolute; 
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		margin: 1rem auto auto auto;
+	}
+}
+
 /* ********************************** */
 /*       MEDIA QUERIES -- 468px       */
 /* ********************************** */

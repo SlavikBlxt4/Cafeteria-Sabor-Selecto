@@ -1,6 +1,7 @@
 let products = [];
 let cart = [];
 let usuarioId;
+let coffees = [];
 
 /* ZONA DE AVANCES DE XAVI */
 
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchCoffees();
   fetchCategories();
   fetchIdPedido(usuarioId); //misma funcion invocada en el login
-  
+  document.getElementById("all").classList.add("active");
 
 });
 
@@ -42,14 +43,39 @@ function fetchCategories(){
   });
 }
 
-function fetchCoffees(){
-  fetch('http://localhost:3000/coffee')
-  .then(response => response.json())
-  .then(data => {
-      console.log(data);
-      createProductCards(data);
-      renderProducts(data);
-  });
+function fetchCoffees() {
+  if (coffees.length > 0) {
+    // If the coffees variable is already populated, use it directly
+    createProductCards(coffees);
+    renderProducts(coffees);
+  } else {
+    // Fetch the coffees from the backend and store them in the coffees variable
+    fetch('http://localhost:3000/coffee')
+      .then(response => response.json())
+      .then(data => {
+        coffees = data; // Store the fetched data in the coffees variable
+        createProductCards(coffees);
+        renderProducts(coffees);
+      });
+  }
+}
+
+
+function fetchCoffeesPerCategory(idCategory){
+  if (coffees.length > 0) {
+    // If the coffees variable is already populated, use it directly
+    createProductCards(coffees);
+    renderProducts(coffees);
+  } else {
+    // Fetch the coffees from the backend and store them in the coffees variable
+    fetch(`http://localhost:3000/coffee/${idCategory}`)
+      .then(response => response.json())
+      .then(data => {
+        coffees = data; // Store the fetched data in the coffees variable
+        createProductCards(coffees);
+        renderProducts(coffees);
+      });
+  }
 }
 
 
@@ -304,18 +330,17 @@ document.querySelectorAll('.container-options span').forEach(span => {
   span.addEventListener('click', setActiveClass);
 });
 
-function renderCoffeesPerCategory(idCategory){
-  fetch(`http://localhost:3000/coffee/${idCategory}`)
-    .then(response => response.json())
-    .then(data => {
-        // Suponiendo que 'createProductCards' y/o 'renderProducts' son las funciones que ya tienes para renderizar los cafés
-        createProductCards(data);
-        renderProducts(data);
-        
-    })
-          
-    .catch(error => console.error('Error al obtener los cafés por categoría:', error));
-}
+
+
+document.getElementById('capsules').addEventListener('click', () => fetchCoffeesPerCategory(1));
+document.getElementById('boxes').addEventListener('click', () => fetchCoffeesPerCategory(2));
+document.getElementById('mix').addEventListener('click', () => fetchCoffeesPerCategory(3));
+document.getElementById('all').addEventListener('click', () => fetchCoffees());
+
+
+
+
+
 
 function clearCoffeesSmoothly(callback) {
   const coffeeContainer = document.querySelector('.container-products');
@@ -329,10 +354,7 @@ function clearCoffeesSmoothly(callback) {
   });
 }
 
-document.getElementById('capsules').addEventListener('click', () => renderCoffeesPerCategory(1));
-document.getElementById('boxes').addEventListener('click', () => renderCoffeesPerCategory(2));
-document.getElementById('mix').addEventListener('click', () => renderCoffeesPerCategory(3));
-document.getElementById('all').addEventListener('click', () => fetchCoffees());
+
 
 //cambiarlo para que recoja los datos al cargar la pagina y no al clickar 
 
