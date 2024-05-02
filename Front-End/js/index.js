@@ -235,10 +235,6 @@ function createProductCard(product) {
           <img src="${product.imagen}" />
       </div>
       <div class="content-card-product">
-          <!-- <div class="stars">
-              ${'*'.repeat(product.stars).split('').map(star => `<i class="fa-solid fa-star"></i>`).join('')}
-              ${'*'.repeat(5 - product.stars).split('').map(star => `<i class="fa-regular fa-star"></i>`).join('')}
-          </div> --> 
           <h3>${product.nombre}</h3>
           ${productDescription}
           <p class="price">${product.precio} <span></span></p>
