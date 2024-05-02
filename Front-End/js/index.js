@@ -6,11 +6,17 @@ let coffees = [];
 /* ZONA DE AVANCES DE XAVI */
 
 document.addEventListener('DOMContentLoaded', () => {
+  sessionStorage.removeItem("coffees");
+  sessionStorage.removeItem("coffees-capsules");
+  sessionStorage.removeItem("coffees-box");
+  sessionStorage.removeItem("coffees-mix");
   fetchCoffees();
-  fetchCategories();
+  fetchCoffeesPerCategory(1);
+  fetchCoffeesPerCategory(2);
+  fetchCoffeesPerCategory(3);
   fetchIdPedido(usuarioId); //misma funcion invocada en el login
   document.getElementById("all").classList.add("active");
-  sessionStorage.removeItem("coffees");
+
 
 });
 
@@ -44,32 +50,70 @@ function fetchCategories(){
   });
 }
 
-function fetchCoffees(){
-  // Check if the coffee data is already stored in localStorage
+async function fetchCoffees(){
+
   let storedCoffees = sessionStorage.getItem('coffees');
-  if (storedCoffees) {
-    storedCoffees = JSON.parse(storedCoffees);
-    createProductCards(storedCoffees);
-    clearCoffeesSmoothly(() => renderProducts(storedCoffees));
-  } else {
-    // If not present in localStorage, fetch from the database and store it
-    fetch('http://localhost:3000/coffee')
+
+  if(storedCoffees){
+    renderAllCoffes();
+  }else{
+    await fetch('http://localhost:3000/coffee')
     .then(response => response.json())
     .then(data => {
         console.log(data);
         sessionStorage.setItem('coffees', JSON.stringify(data));
-        createProductCards(data);
-        renderProducts(data);
+        renderAllCoffes();
     });
   }
 
+
+  };
+
+
+
+function renderAllCoffes(){
+    let storedCoffees = sessionStorage.getItem('coffees');
+    storedCoffees = JSON.parse(storedCoffees);
+    clearCoffeesSmoothly(() => renderProducts(storedCoffees));
+  }
+  
+  
+
+function fetchCoffeesPerCategory(idCategory){
+
+  fetch(`http://localhost:3000/coffee/${idCategory}`)
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+      if (idCategory === 1){
+        sessionStorage.setItem('coffees-capsules', JSON.stringify(data));
+      }
+      else if (idCategory === 2){
+        sessionStorage.setItem('coffees-box', JSON.stringify(data));
+      }
+      else if (idCategory === 3){
+        sessionStorage.setItem('coffees-mix', JSON.stringify(data));
+      }
+  })
 }
 
 
 function renderCoffeesPerCategory(idCategory){
 
+  let storedCoffees;
+
+  if (idCategory === 1){
+     storedCoffees = sessionStorage.getItem('coffees-capsules');
+  }
+  else if (idCategory === 2){
+     storedCoffees = sessionStorage.getItem('coffees-box');
+  }
+  else if (idCategory === 3){
+     storedCoffees = sessionStorage.getItem('coffees-mix');
+  }
+
+
   // Check if the coffee data is already stored in localStorage
-  let storedCoffees = sessionStorage.getItem('coffees');
   if (storedCoffees) {
     storedCoffees = JSON.parse(storedCoffees);
     const filteredCoffees = storedCoffees.filter(coffee => coffee.id_categoria === idCategory);
