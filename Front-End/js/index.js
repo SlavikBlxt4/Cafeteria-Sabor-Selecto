@@ -33,17 +33,7 @@ function getToken(){
   return localStorage.getItem('token');
 }
 
-function enlaceClicado(url, puerto) {
-  const token = getToken();
-  if (!token) {
-    return console.error('No se pudo obtener el token del usuario');
-  }
-  
-  const urlConPuerto = `${window.location.protocol}//${window.location.hostname}:${puerto}${url}`;
 
-  window.location.href = `${urlConPuerto}?token=${encodeURIComponent(token)}`;
- 
-}
 function fetchCategories(){
   fetch('http://localhost:3000/category')
   .then(response => response.json())
@@ -73,6 +63,18 @@ document.getElementById('employee').addEventListener('click', function(){
 document.getElementById('manager').addEventListener('click', function(){
   enlaceClicado('/private-area', 3000);
 });
+
+function enlaceClicado(url, puerto) {
+  const token = getToken();
+  if (!token) {
+    return console.error('No se pudo obtener el token del usuario');
+  }
+  
+  const urlConPuerto = `${window.location.protocol}//${window.location.hostname}:${puerto}${url}`;
+
+  window.location.href = `${urlConPuerto}?token=${encodeURIComponent(token)}`;
+ 
+}
 
   
 
