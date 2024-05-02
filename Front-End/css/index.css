@@ -1008,7 +1008,7 @@ html {
 	display: grid;
 	justify-items: center;
 	grid-template-columns: 1fr 1fr;
-	grid-template-rows: repeat(4, 15px);
+	grid-template-rows: repeat(5, 20px);
 	row-gap: 1.5rem;
 	padding-bottom: 34px;
 }
@@ -1016,7 +1016,7 @@ html {
 
 
 .content-card-product h3 {
-	grid-row: 1/4;
+	grid-row: 1/5;
 	grid-column: 1/-1;
 	font-weight: 600;
 	font-size: 1.6rem;
@@ -1027,7 +1027,7 @@ html {
 
 
 .content-card-product p {
-	grid-row: 2/4;
+	grid-row: 2/5;
 	grid-column: 1/-1;
 	font-size: 1.4rem;
 	color: #777;
@@ -1044,7 +1044,7 @@ html {
 	border-radius: 50%;
 	cursor: pointer;
 	transition: all 0.4s ease;
-	grid-row: 4/4;
+	grid-row: 5/5;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -1063,9 +1063,20 @@ html {
 	color: #fff;
 }
 
-.content-card-product .price {
+.intensity-bar-container{
+	grid-row: 3/5;
+	grid-column: 1/-1;
+	justify-self: center;
 	align-self: center;
-	grid-row: 3/4;
+	padding-bottom: 50px;
+}
+
+
+
+.content-card-product .price {
+	grid-column: 1/-1;
+	align-self: center;
+	grid-row: 4/5;
 	font-size: 1.7rem;
 	font-weight: 600;
 }
@@ -1077,6 +1088,7 @@ html {
 	color: #777;
 	margin-left: 0.5rem;
 }
+
 
 
 
@@ -2020,7 +2032,7 @@ textarea {
 
 	/* Sección banner */
 	.banner{
-		max-height: 65rem;
+		max-height: 100vh;
 	}
 
 	.content-banner{
