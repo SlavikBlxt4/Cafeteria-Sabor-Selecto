@@ -461,12 +461,14 @@ function getProductData(button) {
 
   // Recoger los datos del producto
   var productName = cardProduct.querySelector('h3').textContent;
+  var productImage = cardProduct.querySelector('img').src;
   var productDescription = cardProduct.querySelector('p').textContent;
   var productPrice = cardProduct.querySelector('.price').textContent;
 
   // Crear objeto JSON con los datos
   var productData = {
     name: productName,
+    image: productImage,
     description: productDescription,
     price: productPrice
   };
@@ -526,7 +528,7 @@ function addProductToCart(jsonData) {
 
     // Add the product details to the new div
     productElement.innerHTML = `
-    <img class="product-image" src=${productData.img} alt="${productData.name}">  
+    <img class="product-image" src=${productData.image} alt="${productData.name}">  
     <h3>${productData.name}</h3>
       <p class="product-price">$${productPriceToFloat}</p>
       <div class="cart-item-quantity">

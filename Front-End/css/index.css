@@ -358,6 +358,7 @@ html {
 	display: flex;
 	justify-content: space-around;
 	gap: 10px;
+	align-items: center;
   }
 
   .cart-item p{
@@ -379,8 +380,8 @@ html {
   }
   
   .cart-item img {
-	width: 100px;
-	height: 100px;
+	width: 80px;
+	height: 80px;
 	object-fit: contain;
   }
   
