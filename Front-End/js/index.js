@@ -53,23 +53,13 @@ function fetchCategories(){
 }
 
 function fetchCoffees(){
-  // Check if the coffee data is already stored in localStorage
-  let storedCoffees = sessionStorage.getItem('coffees');
-  if (storedCoffees) {
-    storedCoffees = JSON.parse(storedCoffees);
-    createProductCards(storedCoffees);
-    clearCoffeesSmoothly(() => renderProducts(storedCoffees));
-  } else {
-    // If not present in localStorage, fetch from the database and store it
-    fetch('http://localhost:3000/coffee')
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        sessionStorage.setItem('coffees', JSON.stringify(data));
-        createProductCards(data);
-        renderProducts(data);
-    });
-  }
+  fetch('http://localhost:3000/coffee')
+  .then(response => response.json())
+  .then(data => {
+      console.log(data);
+      createProductCards(data);
+      renderProducts(data);
+  });
 }
 
 
@@ -203,22 +193,6 @@ function createProductCards(products) {
 }
 
 
-function actualizarDatos() {
-  // Realizar un fetch a la API para obtener los datos actualizados
-  fetch('http://localhost:3000/coffee')
-    .then(response => response.json())
-    .then(datos => {
-      // Comparar si los datos recibidos son diferentes a los almacenados en sessionStorage
-      if (JSON.stringify(sessionStorage.getItem('coffees')) !== JSON.stringify(datos)) {
-        // Actualizar sessionStorage con los nuevos datos
-        sessionStorage.setItem('coffees', JSON.stringify(datos));
-        createProductCards(datos);
-        renderProducts(datos);
-      }
-    })
-    .catch(error => console.error('Error al actualizar datos:', error));
-}
-
 
 
 
@@ -333,28 +307,16 @@ document.querySelectorAll('.container-options span').forEach(span => {
 });
 
 function renderCoffeesPerCategory(idCategory){
-
-    // Check if the coffee data is already stored in localStorage
-    let storedCoffees = sessionStorage.getItem('coffees');
-    if (storedCoffees) {
-      storedCoffees = JSON.parse(storedCoffees);
-      const filteredCoffees = storedCoffees.filter(coffee => coffee.id_categoria === idCategory);
-      clearCoffeesSmoothly(() => renderProducts(filteredCoffees));
-    } else {
-      // If not present in localStorage, fetch from the database and store it
-      fetch(`http://localhost:3000/coffee/${idCategory}`)
-      .then(response => response.json())
-      .then(data => {
-          console.log(data);
-          sessionStorage.setItem('coffees', JSON.stringify(data));
-          const filteredCoffees = data.filter(coffee => coffee.id_categoria === idCategory);
-          renderProducts(filteredCoffees);
-      });
-    }
-
-
-    
-
+  fetch(`http://localhost:3000/coffee/${idCategory}`)
+    .then(response => response.json())
+    .then(data => {
+        // Suponiendo que 'createProductCards' y/o 'renderProducts' son las funciones que ya tienes para renderizar los cafés
+        createProductCards(data);
+        renderProducts(data);
+        
+    })
+          
+    .catch(error => console.error('Error al obtener los cafés por categoría:', error));
 }
 
 function clearCoffeesSmoothly(callback) {
@@ -373,6 +335,8 @@ document.getElementById('capsules').addEventListener('click', () => renderCoffee
 document.getElementById('boxes').addEventListener('click', () => renderCoffeesPerCategory(2));
 document.getElementById('mix').addEventListener('click', () => renderCoffeesPerCategory(3));
 document.getElementById('all').addEventListener('click', () => fetchCoffees());
+
+//cambiarlo para que recoja los datos al cargar la pagina y no al clickar 
 
 
 /*function fetchFavouriteCoffees(idUser){
@@ -488,7 +452,8 @@ function addProductToCart(jsonData) {
 
     // Add the product details to the new div
     productElement.innerHTML = `
-      <h3>${productData.name}</h3>
+    <img class="product-image" src=${productData.img} alt="${productData.name}">  
+    <h3>${productData.name}</h3>
       <p class="product-price">$${productPriceToFloat}</p>
       <div class="cart-item-quantity">
         <button class="decrease-quantity">-</button>
