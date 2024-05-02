@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchCategories();
   fetchIdPedido(usuarioId); //misma funcion invocada en el login
   document.getElementById("all").classList.add("active");
+  sessionStorage.removeItem("coffees");
 
 });
 
@@ -43,39 +44,48 @@ function fetchCategories(){
   });
 }
 
-function fetchCoffees() {
-  if (coffees.length > 0) {
-    // If the coffees variable is already populated, use it directly
-    createProductCards(coffees);
-    renderProducts(coffees);
+function fetchCoffees(){
+  // Check if the coffee data is already stored in localStorage
+  let storedCoffees = sessionStorage.getItem('coffees');
+  if (storedCoffees) {
+    storedCoffees = JSON.parse(storedCoffees);
+    createProductCards(storedCoffees);
+    clearCoffeesSmoothly(() => renderProducts(storedCoffees));
   } else {
-    // Fetch the coffees from the backend and store them in the coffees variable
+    // If not present in localStorage, fetch from the database and store it
     fetch('http://localhost:3000/coffee')
-      .then(response => response.json())
-      .then(data => {
-        coffees = data; // Store the fetched data in the coffees variable
-        createProductCards(coffees);
-        renderProducts(coffees);
-      });
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        sessionStorage.setItem('coffees', JSON.stringify(data));
+        createProductCards(data);
+        renderProducts(data);
+    });
   }
+
 }
 
 
-function fetchCoffeesPerCategory(idCategory){
-  if (coffees.length > 0) {
-    // If the coffees variable is already populated, use it directly
-    createProductCards(coffees);
-    renderProducts(coffees);
+function renderCoffeesPerCategory(idCategory){
+
+  // Check if the coffee data is already stored in localStorage
+  let storedCoffees = sessionStorage.getItem('coffees');
+  if (storedCoffees) {
+    storedCoffees = JSON.parse(storedCoffees);
+    const filteredCoffees = storedCoffees.filter(coffee => coffee.id_categoria === idCategory);
+    clearCoffeesSmoothly(() => renderProducts(filteredCoffees));
   } else {
-    // Fetch the coffees from the backend and store them in the coffees variable
+    // If not present in localStorage, fetch from the database and store it
     fetch(`http://localhost:3000/coffee/${idCategory}`)
-      .then(response => response.json())
-      .then(data => {
-        coffees = data; // Store the fetched data in the coffees variable
-        createProductCards(coffees);
-        renderProducts(coffees);
-      });
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        sessionStorage.setItem('coffees', JSON.stringify(data));
+        const filteredCoffees = data.filter(coffee => coffee.id_categoria === idCategory);
+        renderProducts(filteredCoffees);
+    });
   }
+
 }
 
 
@@ -332,9 +342,9 @@ document.querySelectorAll('.container-options span').forEach(span => {
 
 
 
-document.getElementById('capsules').addEventListener('click', () => fetchCoffeesPerCategory(1));
-document.getElementById('boxes').addEventListener('click', () => fetchCoffeesPerCategory(2));
-document.getElementById('mix').addEventListener('click', () => fetchCoffeesPerCategory(3));
+document.getElementById('capsules').addEventListener('click', () => renderCoffeesPerCategory(1));
+document.getElementById('boxes').addEventListener('click', () => renderCoffeesPerCategory(2));
+document.getElementById('mix').addEventListener('click', () => renderCoffeesPerCategory(3));
 document.getElementById('all').addEventListener('click', () => fetchCoffees());
 
 
