@@ -312,8 +312,9 @@ function updateDisplay(priceElement, disponibilidad) {
 function createProductCard(product) {
   // Crear el elemento de la tarjeta del producto
   const cardProduct = document.createElement('div');
+
   cardProduct.classList.add('card-product');
-  //cardProduct.setAttribute('id', 'product');
+  cardProduct.setAttribute('data-id_category', product.id_categoria.toString());
   if (product.category_id === 3) {
     cardProduct.style.width = '300px';
   }
@@ -466,6 +467,11 @@ function fetchIdPedido(){
 }
 
 
+
+
+
+
+
 function getProductData(button) {
   // Obtener el elemento padre más cercano que tenga la clase 'card-product'
   var cardProduct = button.closest('.card-product');
@@ -475,13 +481,15 @@ function getProductData(button) {
   var productImage = cardProduct.querySelector('img').src;
   var productDescription = cardProduct.querySelector('p').textContent;
   var productPrice = cardProduct.querySelector('.price').textContent;
+  var idCategoria = cardProduct.getAttribute('data-id_category');
 
   // Crear objeto JSON con los datos
   var productData = {
     name: productName,
     image: productImage,
     description: productDescription,
-    price: productPrice
+    price: productPrice,
+    idcategory: idCategoria
   };
 
   // Convertir el objeto en una cadena JSON
@@ -504,6 +512,13 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
+
+function capsuleOrNot(idCategoria) {
+  return idCategoria === "1" ? 10 : 1;
+}
+
+
+
 function addProductToCart(jsonData) {
   // Parse the JSON data back to an object
   var productData = JSON.parse(jsonData);
@@ -520,8 +535,9 @@ function addProductToCart(jsonData) {
   if (existingProductElement) {
     // Product is already in the cart, increment quantity
     var quantityElement = existingProductElement.querySelector('.quantity');
-    var currentQuantity = parseInt(quantityElement.textContent) + 1;
-    quantityElement.textContent = currentQuantity;
+    var currentQuantity = parseInt(quantityElement.textContent);
+    var incrementAmount = capsuleOrNot(productData.idcategory); // Use the function here
+    quantityElement.textContent = currentQuantity + incrementAmount;
 
     // Encuentra el elemento de precio y actualiza el precio total
     var priceElement = existingProductElement.querySelector('.product-price');
@@ -537,6 +553,8 @@ function addProductToCart(jsonData) {
     productElement.setAttribute('data-unitPrice', productData.price);
     var productPriceToFloat = parseMoney(productData.price);
 
+    var initialQuantity = capsuleOrNot(productData.idcategory);
+
     
 
     // Add the product details to the new div
@@ -546,7 +564,7 @@ function addProductToCart(jsonData) {
       <p class="product-price">$${productPriceToFloat}</p>
       <div class="cart-item-quantity">
         <button class="decrease-quantity">-</button>
-        <span class="quantity">1</span>
+        <span class="quantity">${initialQuantity}</span>
         <button class="increase-quantity">+</button>
       </div>
     `;
@@ -564,10 +582,11 @@ function addProductToCart(jsonData) {
 
     if (decreaseButton && increaseButton && quantityElement) {
       decreaseButton.addEventListener('click', function() {
-        const currentQuantity = parseInt(quantityElement.textContent, 10);
+        const currentQuantity = parseInt(quantityElement.textContent);
+        var incrementAmount = capsuleOrNot(productData.idcategory);
         if (currentQuantity > 1) {
-          quantityElement.textContent = currentQuantity - 1;
-          updatePrice(productElement, -1); // Disminuye la cantidad en 1
+          quantityElement.textContent = currentQuantity - incrementAmount;
+          updatePrice(productElement, - incrementAmount); // Disminuye la cantidad en 1
           calculateTotal();
           updateCartQuantity();
         } else{
@@ -579,9 +598,11 @@ function addProductToCart(jsonData) {
       });
 
       increaseButton.addEventListener('click', function() {
-        const currentQuantity = parseInt(quantityElement.textContent, 10);
-        quantityElement.textContent = currentQuantity + 1; 
-        updatePrice(productElement, 1); // Aumenta la cantidad en 1
+        const currentQuantity = parseInt(quantityElement.textContent);
+
+        var incrementAmount = capsuleOrNot(productData.idcategory); // Use the function here
+        quantityElement.textContent = currentQuantity + incrementAmount;
+        updatePrice(productElement, incrementAmount); // Aumenta la cantidad en 1
         calculateTotal();
         updateCartQuantity();
       });

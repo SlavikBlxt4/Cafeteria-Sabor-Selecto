@@ -261,22 +261,31 @@ async function authenticateToken(req: AuthenticatedRequest, res: Response, next:
 
 //post para registrar usuarios
 
-app.post('/users', async (req, res) => { //NUNCA meter usuarios a manija en la bbdd, las contraseñas se encriptan
+app.post('/users', async (req, res) => {
     const { email, password } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-      const queryString = 'INSERT INTO usuario ("email", "password", "id_rol") VALUES($1, $2, 1)';
-      const values = [email, hashedPassword];
+        const queryString = 'INSERT INTO usuario ("email", "password", "id_rol") VALUES($1, $2, 1) RETURNING id_usuario';
+        const values = [email, hashedPassword];
 
-      await myPool.query(queryString, values);
-      res.status(200).json({ message: 'User registered successfully' });
-      
+        const result = await myPool.query(queryString, values);
+        const userId = result.rows[0].id_usuario;
+
+        // Create a JWT token for the registered user
+        const token = jwt.sign(
+            { userId, email },
+            secretKey,
+            { expiresIn: '7d' }
+        );
+
+        res.status(200).json({ message: 'User registered successfully', token, userId });
+        
     } catch (error) {
-      console.error('Failed to insert user into database:', error);
-      res.status(500).json({ error: 'Failed to insert user into database' });
+        console.error('Failed to insert user into database:', error);
+        res.status(500).json({ error: 'Failed to insert user into database' });
     }
-  });
+});
 
 app.get('/id_usuario', async (req, res) => { //revisaremos la utilidad de esto
     const { email } = req.query;
