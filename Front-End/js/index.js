@@ -251,6 +251,17 @@ document.getElementById('register-form').addEventListener('submit', async (event
             title: '¡Registro exitoso!',
             text: 'Usuario registrado correctamente.'
           });
+          localStorage.setItem('token', data.token);
+          localStorage.setItem('usuarioId', data.userId);
+          console.log(data.userId);
+          console.log(data.token);
+          fetchIdPedido(usuarioId);
+
+
+          /*usuarioId=data.usuarioId;
+          console.log(usuarioId);
+          localStorage.setItem('usuarioId', usuarioId);
+          fetchIdPedido(usuarioId);*/
           cerrar('.register');
       }
 
@@ -488,6 +499,7 @@ document.addEventListener('DOMContentLoaded', function() {
       var productJSON = getProductData(addCartButton);
       console.log(productJSON);
       addProductToCart(productJSON); // Aquí iría el código para procesar los datos del producto
+      updateCartQuantity();
     }
   });
 });
@@ -515,7 +527,8 @@ function addProductToCart(jsonData) {
     var priceElement = existingProductElement.querySelector('.product-price');
     var unitPrice = parseMoney(productData.price);
     priceElement.textContent = '$' + (unitPrice * currentQuantity).toFixed(2);
-    calculateTotal()
+    calculateTotal();
+    updateCartQuantity();
   } else {
     // Create a new div element for the product
     var productElement = document.createElement('div');
@@ -555,10 +568,12 @@ function addProductToCart(jsonData) {
         if (currentQuantity > 1) {
           quantityElement.textContent = currentQuantity - 1;
           updatePrice(productElement, -1); // Disminuye la cantidad en 1
-          calculateTotal()
+          calculateTotal();
+          updateCartQuantity();
         } else{
           productElement.remove();
-          calculateTotal()
+          calculateTotal();
+          updateCartQuantity();
         
         }
       });
@@ -567,7 +582,8 @@ function addProductToCart(jsonData) {
         const currentQuantity = parseInt(quantityElement.textContent, 10);
         quantityElement.textContent = currentQuantity + 1; 
         updatePrice(productElement, 1); // Aumenta la cantidad en 1
-        calculateTotal()
+        calculateTotal();
+        updateCartQuantity();
       });
     } else {
       console.error('Quantity buttons, quantity element, or price element not found.');
@@ -575,7 +591,9 @@ function addProductToCart(jsonData) {
 
     // Append the new product div to the cart body
     cartBody.appendChild(productElement);
-    calculateTotal()
+
+    calculateTotal();
+    updateCartQuantity();
   }
 }
 
@@ -640,10 +658,51 @@ function parseMoney(value) {
 }
 
 
+function saveCartItemsToArray() {
+  const cartItems = document.querySelectorAll('.cart-item');
+  const cartArray = [];
+
+  cartItems.forEach((item) => {
+    const itemName = item.querySelector('h3').textContent;
+    const itemPrice = item.querySelector('.product-price').textContent;
+    const itemQuantity = parseInt(item.querySelector('.quantity').textContent);
+
+    const cartItem = {
+      name: itemName,
+      price: itemPrice,
+      quantity: itemQuantity,
+    };
+
+    cartArray.push(cartItem);
+  });
+
+  return cartArray;
+}
 
 
 
+ // Suponiendo que tienes una función para obtener el total de elementos en el carrito
+ function getTotalItemsInCart() {
+  const cartItems = document.querySelectorAll('.cart-item');
+  return cartItems.length;
+}
 
+// Actualiza el número de elementos en el carrito
+function updateCartQuantity() {
+  const cartItems = document.querySelectorAll('.cart-item');
+  let totalQuantity = 0;
+
+  cartItems.forEach((item) => {
+    const quantityElement = item.querySelector('.quantity');
+    const quantity = parseInt(quantityElement.textContent);
+    totalQuantity += quantity;
+  });
+
+  const cartQtyElement = document.querySelector('.cart-qty');
+  if (cartQtyElement) {
+    cartQtyElement.textContent = totalQuantity;
+  }
+} 
 
 
 /* ZONA DE AVANCES DE CRESPÁN */
@@ -667,25 +726,19 @@ const selectors = {
 const setupListeners = () => {
   document.addEventListener("DOMContentLoaded", initStore);
 
-  // product event
-  /*selectors.products.addEventListener("click", addToCart);*/
 
   // cart events
   selectors.cartBtn.addEventListener("click", showCart);
   selectors.cartOverlay.addEventListener("click", hideCart);
   selectors.cartClose.addEventListener("click", hideCart);
-  selectors.cartBody.addEventListener("click", updateCart);
   selectors.cartClear.addEventListener("click", clearCart);
 };
 
 //* event handlers
 
 const initStore = () => {
-  /*loadCart();
-  
-  loadProducts("https://fakestoreapi.com/products")
-    .then(renderCartProducts)
-    .finally(renderCart);*/
+
+
 };
 
 const showCart = () => {
@@ -701,173 +754,16 @@ const hideCart = () => {
 
 
 
-const addToCart = (e) => {
-  if (e.target.hasAttribute("data-id")) {
-    const id = parseInt(e.target.dataset.id);
-    const inCart = cart.find((x) => x.id === id);
-
-    if (inCart) {
-      alert("Item is already in cart.");
-      return;
-    }
-
-    cart.push({ id, qty: 1 });
-    saveCart();
-    renderCartProducts();
-    renderCart();
-    showCart();
-  }
-};
-
-const removeFromCart = (id) => {
-  cart = cart.filter((x) => x.id !== id);
-
-  // if the last item is remove, close the cart
-  cart.length === 0 && setTimeout(hideCart, 500);
-
-  renderCartProducts();
-};
-
-const increaseQty = (id) => {
-  const item = cart.find((x) => x.id === id);
-  if (!item) return;
-
-  item.qty++;
-};
-
-const decreaseQty = (id) => {
-  const item = cart.find((x) => x.id === id);
-  if (!item) return;
-
-  item.qty--;
-
-  if (item.qty === 0) removeFromCart(id);
-};
-
-const updateCart = (e) => {
-  if (e.target.hasAttribute("data-btn")) {
-    const cartItem = e.target.closest(".cart-item");
-    const id = parseInt(cartItem.dataset.id);
-    const btn = e.target.dataset.btn;
-
-    btn === "incr" && increaseQty(id);
-    btn === "decr" && decreaseQty(id);
-
-    saveCart();
-    renderCart();
-  }
-};
-
-const saveCart = () => {
-  sessionStorage.setItem("online-store", JSON.stringify(cart));
-};
-
-const loadCart = () => {
-  cart = JSON.parse(sessionStorage.getItem("online-store")) || [];
-};
-
-//* render functions
-
-const renderCart = () => {
-  // show cart qty in navbar
-  const cartQty = cart.reduce((sum, item) => {
-    return sum + item.qty;
-  }, 0);
-
-  selectors.cartQty.textContent = cartQty;
-  selectors.cartQty.classList.toggle("visible", cartQty);
 
 
 
-  // show empty cart
-  if (cart.length === 0) {
-    selectors.cartBody.innerHTML =
-      '<div class="cart-empty">Your cart is empty.</div>';
-    return;
-  }
-
-  // show cart items
-  selectors.cartBody.innerHTML = cart
-    .map(({ id, qty }) => {
-      // get product info of each cart item
-      const product = products.find((x) => x.id === id);
-
-      const { title, image, price } = product;
-
-      const amount = price * qty;
-
-      return `
-        <div class="cart-item" data-id="${id}">
-          <img src="${image}" alt="${title}" />
-          <div class="cart-item-detail">
-            <h3>${title}</h3>
-            <h5>${price.format()}</h5>
-            <div class="cart-item-amount">
-              <i class="bi bi-dash-lg" data-btn="decr"></i>
-              <span class="qty">${qty}</span>
-              <i class="bi bi-plus-lg" data-btn="incr"></i>
-
-              <span class="cart-item-price">
-                ${amount.format()}
-              </span>
-            </div>
-          </div>
-        </div>`;
-    })
-    .join("");
-};
-
-const renderCartProducts = () => {
-  selectors.products.innerHTML = products
-    .map((product) => {
-      const { id, title, image, price } = product;
-
-      // check if product is already in cart
-      const inCart = cart.find((x) => x.id === id);
-
-      // make the add to cart button disabled if already in cart
-      const disabled = inCart ? "disabled" : "";
-
-      // change the text if already in cart
-      const text = inCart ? "Added in Cart" : "Add to Cart";
-
-      return `
-    <div class="product">
-      <img src="${image}" alt="${title}" />
-      <h3>${title}</h3>
-      <h5>${price.format()}</h5>
-      <button ${disabled} data-id=${id}>${text}</button>
-    </div>
-    `;
-    })
-    .join("");
-};
-
-//* api functions
-
-const loadProducts = async (apiURL) => {
-  try {
-    const response = await fetch(apiURL);
-    if (!response.ok) {
-      throw new Error(`http error! status=${response.status}`);
-    }
-    products = await response.json();
-    console.log(products);
-  } catch (error) {
-    console.error("fetch error:", error);
-  }
-};
-
-//* helper functions
 
 
 
-Number.prototype.format = function () {
-  return this.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-  });
-};
+
+
+
+
 
 
 
