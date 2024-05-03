@@ -630,6 +630,7 @@ function clearCart(){
 document.getElementById("cart-clear").addEventListener("click", function(){
     clearCart();
     calculateTotal();
+    updateCartQuantity();
 });
 
 
