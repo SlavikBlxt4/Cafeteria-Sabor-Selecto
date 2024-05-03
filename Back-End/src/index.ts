@@ -271,6 +271,7 @@ app.post('/users', async (req, res) => { //NUNCA meter usuarios a manija en la b
 
       await myPool.query(queryString, values);
       res.status(200).json({ message: 'User registered successfully' });
+      
     } catch (error) {
       console.error('Failed to insert user into database:', error);
       res.status(500).json({ error: 'Failed to insert user into database' });

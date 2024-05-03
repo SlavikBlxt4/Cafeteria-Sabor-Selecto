@@ -319,12 +319,6 @@ function createProductCard(product) {
       <div class="content-card-product">
           <h3>${product.nombre}</h3>
           ${productDescription}
-          <div class="intensity-bar-container">
-              <span class="intensity-bar-label">Intensity:</span>
-              <div class="intensity-bar">
-                <span style="width: ${product.intensidad*10}%; background-color: #000; display: inline-block; height: 0.15rem;"></span>
-              </div>
-          </div>
           <p class="price">${product.precio} <span></span></p>
           <span class="add-cart">
               <i class="fa-solid fa-bag-shopping"></i>
