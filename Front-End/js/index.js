@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById("all").classList.add("active");
 
 
+
 });
 
 
@@ -584,7 +585,7 @@ function addProductToCart(jsonData) {
       decreaseButton.addEventListener('click', function() {
         const currentQuantity = parseInt(quantityElement.textContent);
         var incrementAmount = capsuleOrNot(productData.idcategory);
-        if (currentQuantity > 1) {
+        if (currentQuantity > 10) {
           quantityElement.textContent = currentQuantity - incrementAmount;
           updatePrice(productElement, - incrementAmount); // Disminuye la cantidad en 1
           calculateTotal();
@@ -700,6 +701,12 @@ function saveCartItemsToArray() {
 
   return cartArray;
 }
+
+
+document.getElementById("checkout").addEventListener("click", function(){
+    const cartArray = saveCartItemsToArray();
+    console.log(cartArray);
+});
 
 
 
