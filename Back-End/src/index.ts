@@ -345,10 +345,10 @@ app.get('/pedido/:id_usuario', (req, res) => {
 
 //metodo para insertar productos en la tabla lista
 app.post('/lista', async (req, res) => {
-    const { id_cafe, id_pedido, cantidad, precio_unidad } = req.body;
+    const { id_cafe, id_pedido, cantidad, precio_total } = req.body;
     try {
-        const insertQueryString = 'INSERT INTO lista (id_cafe, id_pedido, cantidad, precio_unidad) VALUES ($1, $2, $3, $4)';
-        const values = [id_cafe, id_pedido, cantidad, precio_unidad];
+        const insertQueryString = 'INSERT INTO lista (id_cafe, id_pedido, cantidad, precio_total) VALUES ($1, $2, $3, $4)';
+        const values = [id_cafe, id_pedido, cantidad, precio_total];
         await myPool.query(insertQueryString, values);
         res.status(201).json({ message: 'Product inserted successfully' });
     } catch (error) {

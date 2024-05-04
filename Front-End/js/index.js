@@ -550,6 +550,7 @@ function addProductToCart(jsonData) {
     priceElement.textContent = '$' + (unitPrice * currentQuantity).toFixed(2);
     calculateTotal();
     updateCartQuantity();
+    updatePrice(existingProductElement);
   } else {
     // Create a new div element for the product
     var productElement = document.createElement('div');
@@ -592,7 +593,7 @@ function addProductToCart(jsonData) {
         var incrementAmount = capsuleOrNot(productData.idcategory);
         if (currentQuantity > 10) {
           quantityElement.textContent = currentQuantity - incrementAmount;
-          updatePrice(productElement, - incrementAmount); // Disminuye la cantidad en 1
+          updatePrice(productElement); // Disminuye la cantidad en 1
           calculateTotal();
           updateCartQuantity();
         } else{
@@ -608,7 +609,7 @@ function addProductToCart(jsonData) {
 
         var incrementAmount = capsuleOrNot(productData.idcategory); // Use the function here
         quantityElement.textContent = currentQuantity + incrementAmount;
-        updatePrice(productElement, incrementAmount); // Aumenta la cantidad en 1
+        updatePrice(productElement); // Aumenta la cantidad en 1
         calculateTotal();
         updateCartQuantity();
       });
@@ -620,6 +621,7 @@ function addProductToCart(jsonData) {
     cartBody.appendChild(productElement);
 
     calculateTotal();
+    updatePrice(productElement);
     updateCartQuantity();
   }
 }
@@ -640,7 +642,7 @@ function calculateTotal(){
   var totalPriceElement = document.getElementById('total-price');
   if (totalPriceElement) {
       // Update the text content to include the tax and the message
-      totalPriceElement.textContent = '$' + total.toFixed(2) + ' (IVA included)';
+      totalPriceElement.textContent = '$' + total.toFixed(2) + ' (VAT included)';
   }
   return total;
 }
@@ -665,7 +667,7 @@ document.getElementById("cart-clear").addEventListener("click", function(){
 
 
 
-function updatePrice(productElement, change) {
+function updatePrice(productElement) {
   var quantityElement = productElement.querySelector('.quantity');
   var priceElement = productElement.querySelector('.product-price');
   var unitPrice = parseMoney(productElement.dataset.unitprice);
@@ -713,7 +715,10 @@ function saveCartItemsToArray() {
 document.getElementById("checkout").addEventListener("click", function(){
     const cartArray = saveCartItemsToArray();
     console.log(cartArray);
+    insertProductIntoDatabase();
 });
+
+
 
 
 
@@ -721,21 +726,47 @@ document.getElementById("checkout").addEventListener("click", function(){
 function insertProductIntoDatabase() {
   const cartArray = saveCartItemsToArray();
   console.log(cartArray);
+  let id_pedido = sessionStorage.getItem('id_pedido');
   for (let i = 0; i < cartArray.length; i++) {
     const id_cafe = cartArray[i].id;
+    const cantidad = cartArray[i].quantity;
+    const precio_total = cartArray[i].price;
+    
+
+
+
     fetch('http://localhost:3000/lista', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ id_cafe, id_pedido, cantidad, precio_unidad })
+      body: JSON.stringify({ id_cafe, id_pedido, cantidad, precio_total })
     })
     .then(response => response.json())
     .then(data => console.log(data))
-    .catch(error => console.error(error));
-
   }
+  const subtotal = calculateTotal();
+  const gastos_envio = subtotal > 20 ? 0 : 5;
+  
+  fetch('http://localhost:3000/pedidos', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ id_pedido, gastos_envio })
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+
+  sessionStorage.removeItem('id_pedido');
+  fetchIdPedido();
+  clearCart();
+  calculateTotal();
+  updateCartQuantity();
+
 }
+
+
 
 
 
