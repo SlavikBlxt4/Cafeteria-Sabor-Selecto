@@ -306,21 +306,73 @@ app.get('/id_usuario', async (req, res) => { //revisaremos la utilidad de esto
     }
 });
 
-app.get('/pedido/:id_usuario', async (req, res) => {
+app.get('/pedido/:id_usuario', (req, res) => {
     const { id_usuario } = req.params;
     try {
         const selectQueryString = 'SELECT * FROM PEDIDO WHERE estado=false AND id_usuario=$1';
         const insertQueryString = 'INSERT INTO pedido (id_usuario, estado) VALUES ($1, false)';
         const values = [id_usuario];
-        const selectResult = await myPool.query(selectQueryString, values);
-        if (selectResult.rows.length === 0) {
-            await myPool.query(insertQueryString, values);
-            return res.status(201).json({ message: 'Nuevo pedido creado' });
-
-        }
-        res.status(200).json(selectResult.rows);
+        myPool.query(selectQueryString, values)
+            .then(selectResult => {
+                if (selectResult.rows.length === 0) {
+                    return myPool.query(insertQueryString, values)
+                    .then(() => {
+                        // Perform a new SELECT query to fetch the inserted row
+                        return myPool.query(selectQueryString, values)
+                            .then(newSelectResult => {
+                                return res.status(200).json(newSelectResult.rows);
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error handling /pedido/:id_usuario:', error);
+                        res.status(500).json({ error: 'Internal Server Error' });
+                    });
+                }
+                res.status(200).json(selectResult.rows);
+                console.log('Nuevo pedido creado');
+            })
+            .catch(error => {
+                console.error('Error handling /pedido/:id_usuario:', error);
+                res.status(500).json({ error: 'Internal Server Error' });
+            });
     } catch (error) {
         console.error('Error handling /pedido/:id_usuario:', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
+});
+
+
+
+//metodo para insertar productos en la tabla lista
+app.post('/lista', async (req, res) => {
+    const { id_cafe, id_pedido, cantidad, precio_unidad } = req.body;
+    try {
+        const insertQueryString = 'INSERT INTO lista (id_cafe, id_pedido, cantidad, precio_unidad) VALUES ($1, $2, $3, $4)';
+        const values = [id_cafe, id_pedido, cantidad, precio_unidad];
+        await myPool.query(insertQueryString, values);
+        res.status(201).json({ message: 'Product inserted successfully' });
+    } catch (error) {
+        console.error('Error inserting product:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }    
+});
+
+
+//metodo para insertar productos en la tabla pedidos
+
+//he creado la columna 'gastos de envio', y hay que hacer una condicion en la que si el precio total es > 20, los gastos de envio son gratuitos; sino, se cobrarán 5€
+
+
+app.put('/pedidos', async (req, res) => {
+    const { gastos_envio, id_pedido } = req.body;
+    try {
+        const insertQueryString = 'UPDATE pedido SET fecha = CURRENT_TIMESTAMP, estado = true, gastos_envio = $1 WHERE id_pedido = $2';
+
+        const values = [gastos_envio, id_pedido];
+        await myPool.query(insertQueryString, values);
+        res.status(201).json({ message: 'Product inserted successfully' });
+    } catch (error) {
+        console.error('Error inserting product:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }    
 });

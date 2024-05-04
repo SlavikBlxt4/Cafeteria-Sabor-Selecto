@@ -316,6 +316,7 @@ function createProductCard(product) {
 
   cardProduct.classList.add('card-product');
   cardProduct.setAttribute('data-id_category', product.id_categoria.toString());
+  cardProduct.setAttribute('data-id', product.id_cafe.toString());
   if (product.category_id === 3) {
     cardProduct.style.width = '300px';
   }
@@ -464,6 +465,7 @@ function fetchIdPedido(){
   .then(response => response.json())
   .then(data => {
       console.log(data);
+      sessionStorage.setItem('id_pedido', data[0].id_pedido);
   });
 }
 
@@ -483,9 +485,11 @@ function getProductData(button) {
   var productDescription = cardProduct.querySelector('p').textContent;
   var productPrice = cardProduct.querySelector('.price').textContent;
   var idCategoria = cardProduct.getAttribute('data-id_category');
+  var id = cardProduct.getAttribute('data-id');
 
   // Crear objeto JSON con los datos
   var productData = {
+    id: id,
     name: productName,
     image: productImage,
     description: productDescription,
@@ -552,6 +556,7 @@ function addProductToCart(jsonData) {
     productElement.classList.add('cart-item');
     productElement.setAttribute('data-name', productData.name);
     productElement.setAttribute('data-unitPrice', productData.price);
+    productElement.setAttribute('data-id', productData.id);
     var productPriceToFloat = parseMoney(productData.price);
 
     var initialQuantity = capsuleOrNot(productData.idcategory);
@@ -689,8 +694,10 @@ function saveCartItemsToArray() {
     const itemName = item.querySelector('h3').textContent;
     const itemPrice = item.querySelector('.product-price').textContent;
     const itemQuantity = parseInt(item.querySelector('.quantity').textContent);
+    const itemId = item.dataset.id;
 
     const cartItem = {
+      id: itemId,
       name: itemName,
       price: itemPrice,
       quantity: itemQuantity,
@@ -707,6 +714,28 @@ document.getElementById("checkout").addEventListener("click", function(){
     const cartArray = saveCartItemsToArray();
     console.log(cartArray);
 });
+
+
+
+
+function insertProductIntoDatabase() {
+  const cartArray = saveCartItemsToArray();
+  console.log(cartArray);
+  for (let i = 0; i < cartArray.length; i++) {
+    const id_cafe = cartArray[i].id;
+    fetch('http://localhost:3000/lista', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id_cafe, id_pedido, cantidad, precio_unidad })
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error(error));
+
+  }
+}
 
 
 
