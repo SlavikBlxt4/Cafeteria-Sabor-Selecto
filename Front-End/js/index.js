@@ -465,7 +465,7 @@ function fetchIdPedido(){
   .then(response => response.json())
   .then(data => {
       console.log(data);
-      sessionStorage.setItem('id_pedido', data[0].id_pedido);
+      sessionStorage.setItem('id_pedido', data.id_pedido);
   });
 }
 
@@ -745,15 +745,15 @@ function insertProductIntoDatabase() {
     .then(response => response.json())
     .then(data => console.log(data))
   }
-  const subtotal = calculateTotal();
-  const gastos_envio = subtotal > 20 ? 0 : 5;
+  const importe_pedido = calculateTotal();
+  const gastos_envio = importe_pedido > 20 ? 0 : 5;
   
   fetch('http://localhost:3000/pedidos', {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ id_pedido, gastos_envio })
+    body: JSON.stringify({ id_pedido, importe_pedido, gastos_envio })
   })
   .then(response => response.json())
   .then(data => console.log(data))
@@ -763,6 +763,7 @@ function insertProductIntoDatabase() {
   clearCart();
   calculateTotal();
   updateCartQuantity();
+  
 
 }
 

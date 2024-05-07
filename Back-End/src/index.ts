@@ -306,40 +306,48 @@ app.get('/id_usuario', async (req, res) => { //revisaremos la utilidad de esto
     }
 });
 
-app.get('/pedido/:id_usuario', (req, res) => {
+app.get('/pedido/:id_usuario', (req: Request, res: Response) => {
     const { id_usuario } = req.params;
-    try {
-        const selectQueryString = 'SELECT * FROM PEDIDO WHERE estado=false AND id_usuario=$1';
-        const insertQueryString = 'INSERT INTO pedido (id_usuario, estado) VALUES ($1, false)';
-        const values = [id_usuario];
-        myPool.query(selectQueryString, values)
-            .then(selectResult => {
-                if (selectResult.rows.length === 0) {
-                    return myPool.query(insertQueryString, values)
-                    .then(() => {
-                        // Perform a new SELECT query to fetch the inserted row
-                        return myPool.query(selectQueryString, values)
-                            .then(newSelectResult => {
-                                return res.status(200).json(newSelectResult.rows);
-                            });
-                    })
-                    .catch(error => {
-                        console.error('Error handling /pedido/:id_usuario:', error);
-                        res.status(500).json({ error: 'Internal Server Error' });
-                    });
-                }
-                res.status(200).json(selectResult.rows);
-                console.log('Nuevo pedido creado');
-            })
-            .catch(error => {
-                console.error('Error handling /pedido/:id_usuario:', error);
-                res.status(500).json({ error: 'Internal Server Error' });
-            });
-    } catch (error) {
-        console.error('Error handling /pedido/:id_usuario:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+    getPedido(id_usuario)
+        .then(pedido => {
+            if (!pedido) {
+                console.log("no hay pedido");
+                // If no active pedido is found, create a new one
+                return createNewPedido(id_usuario)
+                    .then(newPedido => res.status(201).json(newPedido));
+            }
+            res.status(200).json(pedido);
+        })
+        .catch(error => {
+            console.error('Error fetching or creating pedido:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        });
 });
+
+function getPedido(idUsuario: string): Promise<any> {
+    const queryString = 'SELECT * FROM PEDIDO WHERE estado=false AND id_usuario=$1';
+    const values = [idUsuario];
+    return myPool.query(queryString, values)
+        .then(({ rows }) => rows.length ? rows[0] : null)
+        .catch(error => {
+            console.error(error);
+            throw error; // Re-throw the error to be handled by the caller
+        });
+}
+
+function createNewPedido(idUsuario: string): Promise<any> {
+    const insertQueryString = 'WITH inserted_row AS (INSERT INTO pedido (id_usuario, estado) VALUES ($1, false) RETURNING *) SELECT * FROM inserted_row;';
+    const values = [idUsuario];
+    return myPool.query(insertQueryString, values)
+        .then(({ rows }) => {
+            console.log(rows[0]);
+            return rows[0];
+        })
+        .catch(error => {
+            console.error(error);
+            throw error; // Re-throw the error to be handled by the caller
+        });
+}
 
 
 
@@ -364,13 +372,14 @@ app.post('/lista', async (req, res) => {
 
 
 app.put('/pedidos', async (req, res) => {
-    const { gastos_envio, id_pedido } = req.body;
+    const { gastos_envio, importe_pedido, id_pedido } = req.body;
     try {
-        const insertQueryString = 'UPDATE pedido SET fecha = CURRENT_TIMESTAMP, estado = true, gastos_envio = $1 WHERE id_pedido = $2';
+        const insertQueryString = 'UPDATE pedido SET fecha = CURRENT_TIMESTAMP, estado = true, gastos_envio = $1, importe_pedido = $2 WHERE id_pedido = $3';
 
-        const values = [gastos_envio, id_pedido];
+        const values = [gastos_envio, importe_pedido, id_pedido];
         await myPool.query(insertQueryString, values);
         res.status(201).json({ message: 'Product inserted successfully' });
+        
     } catch (error) {
         console.error('Error inserting product:', error);
         res.status(500).json({ error: 'Internal Server Error' });
