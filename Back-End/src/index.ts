@@ -5,6 +5,13 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
+import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
+
+
+dotenv.config();
+
+
 
 
 
@@ -20,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'Intranet')));
 
 
-dotenv.config();
+
 const database_password = process.env.DATABASE_KEY;
 if (database_password === undefined) {
     throw new Error('The database password is not set.');
@@ -385,3 +392,37 @@ app.put('/pedidos', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }    
 });
+
+
+
+app.get("/email/:id_usuario", async (req, res)=>{     
+
+    const {id_usuario} = req.params;
+    const {rows} = await myPool.query(   
+        "SELECT email FROM usuario WHERE id_usuario = $1", [id_usuario]
+    );
+    res.json(rows);
+    console.log("Cafes pedidos");
+});
+
+
+/*if (process.env.SENDGRID_API_KEY) {
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+  } else {
+    console.error('SENDGRID_API_KEY is not set in environment variables');
+  }
+const msg = {
+  to: 'slavikiftodii5@gmail.com', // Change to your recipient
+  from: 'slavikiftodii5@gmail.com', // Change to your verified sender
+  subject: 'Sending with SendGrid is Fun',
+  text: 'and easy to do anywhere, even with Node.js',
+  html: '<strong>and easy to do anywhere, even with Node.js</strong>',
+}
+sgMail
+  .send(msg)
+  .then(() => {
+    console.log('Email sent')
+  })
+  .catch((error: any) => {
+    console.error(error)
+  })*/
