@@ -438,7 +438,7 @@ app.get("/email/:id_usuario", async (req, res)=>{
   }
     const msg = {
     to: email_cliente, // Change to your recipient
-    from: 'slavikiftodii5@gmail.com', // Change to your verified sender
+    from: 'saborselecto.noreply@gmail.com', // Change to your verified sender
     templateId: 'd-8c3d3137625a49dba239008ea3191427',
     dynamicTemplateData: dynamicData
     }
