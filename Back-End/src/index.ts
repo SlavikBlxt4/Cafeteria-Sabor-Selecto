@@ -5,7 +5,6 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
-import nodemailer from 'nodemailer';
 import sgMail from '@sendgrid/mail';
 
 
@@ -394,6 +393,25 @@ app.put('/pedidos', async (req, res) => {
 });
 
 
+async function getIdPedido(idUsuario: string): Promise<any> {
+
+
+    const intIdUsuario = parseInt(idUsuario, 10);
+    
+    const queryString = 'SELECT id_pedido FROM pedido WHERE id_pedido = (SELECT MAX(id_pedido) FROM pedido WHERE id_usuario = $1);';
+    const values = [intIdUsuario];
+    console.log(queryString, values);
+    try {
+        const { rows } = await myPool.query(queryString, values);
+        console.log(rows);
+        return rows.length ? rows[0].id_pedido : null;
+    } catch (error) {
+        console.error(error);
+        throw error; // Re-throw the error to be handled by the caller
+    }
+}
+
+
 
 app.get("/email/:id_usuario", async (req, res)=>{     
 
@@ -401,28 +419,41 @@ app.get("/email/:id_usuario", async (req, res)=>{
     const {rows} = await myPool.query(   
         "SELECT email FROM usuario WHERE id_usuario = $1", [id_usuario]
     );
+    console.log(rows);
     res.json(rows);
-    console.log("Cafes pedidos");
-});
+    console.log("Email recibido: ", rows[0].email);
 
+    
 
-/*if (process.env.SENDGRID_API_KEY) {
+    var email_cliente = rows[0].email;
+    const dynamicData = {
+        id_pedido: await getIdPedido(id_usuario)
+    }
+    console.log("id pedido: ", await getIdPedido(id_usuario));
+
+    if (process.env.SENDGRID_API_KEY) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
   } else {
     console.error('SENDGRID_API_KEY is not set in environment variables');
   }
-const msg = {
-  to: 'slavikiftodii5@gmail.com', // Change to your recipient
-  from: 'slavikiftodii5@gmail.com', // Change to your verified sender
-  subject: 'Sending with SendGrid is Fun',
-  text: 'and easy to do anywhere, even with Node.js',
-  html: '<strong>and easy to do anywhere, even with Node.js</strong>',
-}
-sgMail
-  .send(msg)
-  .then(() => {
-    console.log('Email sent')
-  })
-  .catch((error: any) => {
-    console.error(error)
-  })*/
+    const msg = {
+    to: email_cliente, // Change to your recipient
+    from: 'slavikiftodii5@gmail.com', // Change to your verified sender
+    templateId: 'd-8c3d3137625a49dba239008ea3191427',
+    dynamicTemplateData: dynamicData
+    }
+    sgMail
+    .send(msg)
+    .then(() => {
+        console.log('Email sent')
+    })
+    .catch((error: any) => {
+        console.error(error)
+    })
+
+
+
+
+});
+
+

@@ -758,6 +758,18 @@ function insertProductIntoDatabase() {
   .then(response => response.json())
   .then(data => console.log(data))
 
+
+  const usuarioId = localStorage.getItem('usuarioId');
+
+  fetch(`http://localhost:3000/email/${usuarioId}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  })
+  .then(response => response.json())
+  .then(data => console.log(data))
+
   sessionStorage.removeItem('id_pedido');
   fetchIdPedido();
   clearCart();
