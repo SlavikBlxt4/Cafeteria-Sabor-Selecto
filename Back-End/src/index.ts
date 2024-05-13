@@ -378,11 +378,11 @@ app.post('/lista', async (req, res) => {
 
 
 app.put('/pedidos', async (req, res) => {
-    const { gastos_envio, importe_pedido, id_pedido } = req.body;
+    const { importe_pedido, id_pedido } = req.body;
     try {
-        const insertQueryString = 'UPDATE pedido SET fecha = CURRENT_TIMESTAMP, estado = true, gastos_envio = $1, importe_pedido = $2 WHERE id_pedido = $3';
+        const insertQueryString = 'UPDATE pedido SET fecha = CURRENT_TIMESTAMP, estado = true, importe_pedido = $1 WHERE id_pedido = $2';
 
-        const values = [gastos_envio, importe_pedido, id_pedido];
+        const values = [importe_pedido, id_pedido];
         await myPool.query(insertQueryString, values);
         res.status(201).json({ message: 'Product inserted successfully' });
         

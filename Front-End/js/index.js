@@ -715,7 +715,17 @@ function saveCartItemsToArray() {
 document.getElementById("checkout").addEventListener("click", function(){
     const cartArray = saveCartItemsToArray();
     console.log(cartArray);
-    insertProductIntoDatabase();
+
+    if(usuarioId){
+      insertProductIntoDatabase();
+    }else{
+      Swal.fire({
+        icon: 'error',
+        title: 'Pedido no realizado',
+        text: '¡Debes iniciar sesión para poder realizar compras!'
+      });
+    }
+    
 });
 
 
@@ -760,6 +770,7 @@ function insertProductIntoDatabase() {
 
 
   const usuarioId = localStorage.getItem('usuarioId');
+  
 
   fetch(`http://localhost:3000/email/${usuarioId}`, {
     method: 'GET',
@@ -775,7 +786,7 @@ function insertProductIntoDatabase() {
   clearCart();
   calculateTotal();
   updateCartQuantity();
-  
+
   Swal.fire({
     icon: 'success',
     title: '¡Pedido realizado!',
