@@ -776,6 +776,12 @@ function insertProductIntoDatabase() {
   calculateTotal();
   updateCartQuantity();
   
+  Swal.fire({
+    icon: 'success',
+    title: '¡Pedido realizado!',
+    text: 'Compra realizada correctamente.'
+  });
+  
 
 }
 
