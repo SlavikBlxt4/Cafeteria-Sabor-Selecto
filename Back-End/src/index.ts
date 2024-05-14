@@ -6,6 +6,9 @@ import * as jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import path from 'path';
 import sgMail from '@sendgrid/mail';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
+import session from 'express-session';
 
 
 dotenv.config();
@@ -24,6 +27,12 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'Intranet')));
+
+app.use(session({
+    secret: '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',
+    resave: false,
+    saveUninitialized: true
+  }));
 
 
 
@@ -55,7 +64,81 @@ const myPool = new Pool({
 
 
 
+//autenticacion por google
 
+
+
+
+passport.use(new GoogleStrategy({
+    clientID: "278846185906-90c7n6c8t52onmd9id3vuqckcujolkrp.apps.googleusercontent.com",
+    clientSecret: "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",
+    callbackURL: "http://localhost:3000/auth/google/callback"
+  },
+  async (accessToken, refreshToken, profile, cb) => {
+    if (profile.emails && profile.emails.length > 0) {
+    const email = profile.emails[0].value;
+    try {
+      // Busca al usuario por su email
+      const result = await myPool.query('SELECT * FROM usuario WHERE email = $1', [email]);
+      
+      if (result.rows.length > 0) {
+        // El usuario ya existe, así que procede con el login
+        const usuario = result.rows[0];
+        return cb(null, usuario);
+      } else {
+        // El usuario no existe, así que crea uno nuevo
+        const hashedPassword = await bcrypt.hash(profile.id, 10); // Usa el ID de Google como contraseña por defecto
+        const queryString = 'INSERT INTO usuario (email, password, id_rol) VALUES($1, $2, 1) RETURNING id_usuario';
+        const values = [email, hashedPassword];
+  
+        const newUser = await myPool.query(queryString, values);
+        const userId = newUser.rows[0].id_usuario;
+        return cb(null, { id_usuario: userId, email: email });
+      }
+    } catch (error) {
+      return cb(error);
+    }
+  }
+  }));
+
+  interface User {
+    id: number;
+    username: string;
+    email: string;
+   
+}
+
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+app.get('/auth/google/callback', 
+  passport.authenticate('google', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Autenticación exitosa, redirige a home.
+    
+    
+    
+    res.redirect('http://127.0.0.1:5500/Front-End/index.html');
+  });
+
+
+
+
+
+  passport.serializeUser((user: Express.User, done) => {
+    // Aquí serializas el usuario para almacenarlo en la sesión
+    done(null, user);
+  });
+  
+  // Configurar deserialización de usuario
+  passport.deserializeUser((user: Express.User, done) => {
+    // Aquí deserializas el usuario recuperándolo de la sesión
+    done(null, user);
+  });
 
 
 
