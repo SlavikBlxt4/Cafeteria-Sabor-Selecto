@@ -623,7 +623,7 @@ html {
 .banner {
 	background-image: linear-gradient(100deg, #000000, #00000020),
 		url('../images/Taza\ cafe\ 6.jpg');
-	height: 85rem;
+	height: 100vh;
 	background-size: cover;
 	background-position: center;
 }
