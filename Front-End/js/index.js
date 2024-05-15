@@ -716,6 +716,8 @@ document.getElementById("checkout").addEventListener("click", function(){
     const cartArray = saveCartItemsToArray();
     console.log(cartArray);
 
+    const usuarioId = localStorage.getItem('usuarioId');
+
     if(usuarioId){
       insertProductIntoDatabase();
     }else{
