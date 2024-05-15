@@ -211,8 +211,8 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
       console.error('Error al iniciar sesión:', error);
       Swal.fire({
         icon: 'error',
-        title: 'No se pudo iniciar sesión',
-        text: 'Esta cuenta no está registrada, verifique las credenciales.'
+        title: 'It was not posible to log in',
+        text: 'This account is not registered, please check the credentials.'
       });
   }
 });
@@ -242,15 +242,15 @@ document.getElementById('register-form').addEventListener('submit', async (event
       if (data.error) {
           Swal.fire({
             icon: 'error',
-            title: 'Error al registrar',
-            text: data.error === 'User already exists' ? 'Esta cuenta ya está registrada. Por favor, ve a iniciar sesión.' : data.error
+            title: 'Error signing up',
+            text: data.error === 'User already exists' ? 'This account is already registered. Please, log in.' : data.error
           });
       } else {
           console.log(data); // Manejar la respuesta del servidor según lo necesario
           Swal.fire({
             icon: 'success',
-            title: '¡Registro exitoso!',
-            text: 'Usuario registrado correctamente.'
+            title: 'Signe up succesfully',
+            text: 'User registered correctly.'
           });
           localStorage.setItem('token', data.token);
           localStorage.setItem('usuarioId', data.userId);
