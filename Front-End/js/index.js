@@ -178,7 +178,7 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
       });
 
       if (!response.ok) {
-          throw new Error('Error al iniciar sesión');
+          throw new Error('Log in error');
       }
 
       const data = await response.json();
@@ -186,8 +186,8 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
       if (data.error) {
         Swal.fire({
           icon: 'error',
-          title: 'Error al iniciar sesión',
-          text: data.error === 'User not found' ? 'Esta cuenta no está registrada.' : data.error
+          title: 'Log In error',
+          text: data.error === 'User not found' ? 'This account is already registered.' : data.error
         });
 
     } else {
@@ -195,8 +195,8 @@ document.getElementById('login-form').addEventListener('submit', async (event) =
         localStorage.setItem('token', data.token);
         Swal.fire({
           icon: 'success',
-          title: '¡Sesión iniciada!',
-          text: 'Sesión iniciada correctamente.'
+          title: '¡Logged in!',
+          text: 'You have succesfully logged in.'
         });
         usuarioId=data.usuarioId;
         console.log(usuarioId);
@@ -591,7 +591,7 @@ function addProductToCart(jsonData) {
       decreaseButton.addEventListener('click', function() {
         const currentQuantity = parseInt(quantityElement.textContent);
         var incrementAmount = capsuleOrNot(productData.idcategory);
-        if (currentQuantity > 10) {
+        if (currentQuantity > incrementAmount) {
           quantityElement.textContent = currentQuantity - incrementAmount;
           updatePrice(productElement); // Disminuye la cantidad en 1
           calculateTotal();
@@ -721,8 +721,8 @@ document.getElementById("checkout").addEventListener("click", function(){
     }else{
       Swal.fire({
         icon: 'error',
-        title: 'Pedido no realizado',
-        text: '¡Debes iniciar sesión para poder realizar compras!'
+        title: 'Order not placed',
+        text: 'You need to log in before trying to buy!'
       });
     }
     
@@ -789,8 +789,8 @@ function insertProductIntoDatabase() {
 
   Swal.fire({
     icon: 'success',
-    title: '¡Pedido realizado!',
-    text: 'Compra realizada correctamente.'
+    title: 'Order placed!',
+    text: 'Order placed succesfully.'
   });
   
 
