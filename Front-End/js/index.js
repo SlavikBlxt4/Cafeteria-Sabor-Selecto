@@ -249,7 +249,7 @@ document.getElementById('register-form').addEventListener('submit', async (event
           console.log(data); // Manejar la respuesta del servidor según lo necesario
           Swal.fire({
             icon: 'success',
-            title: 'Signe up succesfully',
+            title: 'Signed up succesfully',
             text: 'User registered correctly.'
           });
           localStorage.setItem('token', data.token);
